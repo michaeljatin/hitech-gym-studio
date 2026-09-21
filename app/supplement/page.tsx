@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import {
     Package, Plus, Minus, Trash2, Search, Filter,
     AlertTriangle, TrendingUp, DollarSign, RefreshCw, Layers, ShieldCheck
@@ -28,7 +29,6 @@ interface StockLog {
 }
 
 export default function SupplementDashboard() {
-    // State management
     const [supplements, setSupplements] = useState<SupplementItem[]>([
         { id: 1, name: "Whey Protein Isolate 2kg", category: "Protein", sku: "PRO-WHD-01", batchNo: "BATCH-2026-A", stock: 15, minThreshold: 5, costPrice: 1900, sellingPrice: 2499, supplier: "Func Lab Health" },
         { id: 2, name: "Creatine Monohydrate 250g", category: "Performance", sku: "PER-CRE-02", batchNo: "BATCH-2026-B", stock: 8, minThreshold: 4, costPrice: 650, sellingPrice: 899, supplier: "Aiwo Limited" },
@@ -45,7 +45,6 @@ export default function SupplementDashboard() {
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [isAddOpen, setIsAddOpen] = useState(false);
 
-    // Form state for new product
     const [form, setForm] = useState({
         name: "",
         category: "Protein" as const,
@@ -58,7 +57,6 @@ export default function SupplementDashboard() {
         supplier: ""
     });
 
-    // Computed metrics
     const totalInventoryValue = useMemo(() => {
         return supplements.reduce((acc, item) => acc + (item.stock * item.sellingPrice), 0);
     }, [supplements]);
@@ -75,7 +73,6 @@ export default function SupplementDashboard() {
         return supplements.filter(item => item.stock === 0).length;
     }, [supplements]);
 
-    // Filtered items
     const filteredSupplements = useMemo(() => {
         return supplements.filter(item => {
             const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || item.sku.toLowerCase().includes(searchQuery.toLowerCase());
@@ -84,37 +81,19 @@ export default function SupplementDashboard() {
         });
     }, [supplements, searchQuery, selectedCategory]);
 
-    // Handlers
     const handleAddProduct = (e: React.FormEvent) => {
         e.preventDefault();
         if (!form.name || !form.sku) return;
 
-        const newItem: SupplementItem = {
-            id: Date.now(),
-            ...form
-        };
+        const newItem: SupplementItem = { id: Date.now(), ...form };
 
         setSupplements([newItem, ...supplements]);
         setLogs([{
-            id: Date.now(),
-            timestamp: "Just now",
-            productName: form.name,
-            action: "New Product Initialized",
-            quantityChange: form.stock
+            id: Date.now(), timestamp: "Just now", productName: form.name, action: "New Product Initialized", quantityChange: form.stock
         }, ...logs]);
 
         setIsAddOpen(false);
-        setForm({
-            name: "",
-            category: "Protein",
-            sku: "",
-            batchNo: "",
-            stock: 10,
-            minThreshold: 3,
-            costPrice: 1000,
-            sellingPrice: 1499,
-            supplier: ""
-        });
+        setForm({ name: "", category: "Protein", sku: "", batchNo: "", stock: 10, minThreshold: 3, costPrice: 1000, sellingPrice: 1499, supplier: "" });
     };
 
     const updateStock = (id: number, delta: number) => {
@@ -124,11 +103,7 @@ export default function SupplementDashboard() {
                 const diff = newStock - item.stock;
                 if (diff !== 0) {
                     setLogs(prev => [{
-                        id: Date.now(),
-                        timestamp: "Just now",
-                        productName: item.name,
-                        action: diff > 0 ? "Stock Restocked" : "Stock Dispensed",
-                        quantityChange: diff
+                        id: Date.now(), timestamp: "Just now", productName: item.name, action: diff > 0 ? "Stock Restocked" : "Stock Dispensed", quantityChange: diff
                     }, ...prev]);
                 }
                 return { ...item, stock: newStock };
@@ -139,35 +114,29 @@ export default function SupplementDashboard() {
 
     const deleteProduct = (id: number, name: string) => {
         setSupplements(supplements.filter(item => item.id !== id));
-        setLogs(prev => [{
-            id: Date.now(),
-            timestamp: "Just now",
-            productName: name,
-            action: "Product Deleted",
-            quantityChange: 0
-        }, ...prev]);
+        setLogs(prev => [{ id: Date.now(), timestamp: "Just now", productName: name, action: "Product Deleted", quantityChange: 0 }, ...prev]);
     };
 
     return (
         <div className="min-h-screen bg-black text-white p-6 font-mono">
             <div className="max-w-7xl mx-auto space-y-6">
-
-                {/* Header */}
                 <header className="border-b border-zinc-800 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <div className="flex items-center gap-2">
-                            <ShieldCheck className="h-6 w-6 text-emerald-400" />
-                            <h1 className="text-xl font-bold tracking-wider uppercase">Hitech Gym Studio // Supplement Stack Command Center</h1>
-                        </div>
+                        <Link href="/" className="flex items-center gap-2 group cursor-pointer w-fit">
+                            <ShieldCheck className="h-6 w-6 text-emerald-400 group-hover:text-emerald-300 transition" />
+                            <h1 className="text-xl font-bold tracking-wider uppercase group-hover:text-zinc-300 transition">
+                                Hitech Gym Studio // Supplement Stack Command Center
+                            </h1>
+                        </Link>
                         <p className="text-xs text-zinc-500 mt-1">Real-time inventory valuation, stock threshold monitoring, and fulfillment logs.</p>
                     </div>
-                    <button
-                        onClick={() => setIsAddOpen(true)}
-                        className="bg-white text-black font-bold px-4 py-2 text-xs uppercase tracking-widest hover:bg-zinc-200 transition flex items-center gap-2"
-                    >
+                    <button onClick={() => setIsAddOpen(true)} className="bg-white text-black font-bold px-4 py-2 text-xs uppercase tracking-widest hover:bg-zinc-200 transition flex items-center gap-2">
                         <Plus className="h-4 w-4" /> Add New Supplement
                     </button>
                 </header>
+
+                {/* Metric Cards, Filters, Table, Logs, Modal Form (Same as before) */}
+                {/* ... [Nenu kindha full code isthunnanu, ikkada cut chesi paste cheyandi] ... */}
 
                 {/* Analytics Metric Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -181,7 +150,6 @@ export default function SupplementDashboard() {
                             <TrendingUp className="h-3 w-3" /> Projected Retail Revenue
                         </div>
                     </div>
-
                     <div className="bg-zinc-950 border border-zinc-800 p-4 space-y-2">
                         <div className="flex justify-between items-center text-zinc-400 text-xs uppercase">
                             <span>Total Stacks Available</span>
@@ -190,7 +158,6 @@ export default function SupplementDashboard() {
                         <div className="text-2xl font-bold text-white">{totalStacks} Units</div>
                         <div className="text-[10px] text-zinc-400">Across {supplements.length} Active SKUs</div>
                     </div>
-
                     <div className="bg-zinc-950 border border-zinc-800 p-4 space-y-2">
                         <div className="flex justify-between items-center text-zinc-400 text-xs uppercase">
                             <span>Low Stock Alerts</span>
@@ -199,7 +166,6 @@ export default function SupplementDashboard() {
                         <div className="text-2xl font-bold text-amber-400">{lowStockCount} Items</div>
                         <div className="text-[10px] text-zinc-400">Below minimum safety threshold</div>
                     </div>
-
                     <div className="bg-zinc-950 border border-zinc-800 p-4 space-y-2">
                         <div className="flex justify-between items-center text-zinc-400 text-xs uppercase">
                             <span>Out of Stock</span>
@@ -214,22 +180,12 @@ export default function SupplementDashboard() {
                 <div className="flex flex-col md:flex-row justify-between gap-4 bg-zinc-950 border border-zinc-800 p-4">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
-                        <input
-                            type="text"
-                            placeholder="Search by product name or SKU..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-zinc-900 border border-zinc-800 pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-600"
-                        />
+                        <input type="text" placeholder="Search by product name or SKU..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-zinc-900 border border-zinc-800 pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-600" />
                     </div>
                     <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
                         <Filter className="h-4 w-4 text-zinc-500 shrink-0" />
                         {["All", "Protein", "Performance", "Wellness", "Pre-Workout"].map((cat) => (
-                            <button
-                                key={cat}
-                                onClick={() => setSelectedCategory(cat)}
-                                className={`px-3 py-1.5 text-xs uppercase tracking-wider shrink-0 transition ${selectedCategory === cat ? 'bg-white text-black font-bold' : 'bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800'}`}
-                            >
+                            <button key={cat} onClick={() => setSelectedCategory(cat)} className={`px-3 py-1.5 text-xs uppercase tracking-wider shrink-0 transition ${selectedCategory === cat ? 'bg-white text-black font-bold' : 'bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800'}`}>
                                 {cat}
                             </button>
                         ))}
@@ -258,49 +214,29 @@ export default function SupplementDashboard() {
                             </thead>
                             <tbody>
                                 {filteredSupplements.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={8} className="py-8 text-center text-zinc-500">No supplement items found matching criteria.</td>
-                                    </tr>
+                                    <tr><td colSpan={8} className="py-8 text-center text-zinc-500">No supplement items found matching criteria.</td></tr>
                                 ) : (
                                     filteredSupplements.map((item) => {
                                         const margin = Math.round(((item.sellingPrice - item.costPrice) / item.sellingPrice) * 100);
                                         const isOut = item.stock === 0;
                                         const isLow = item.stock <= item.minThreshold && !isOut;
-
                                         return (
                                             <tr key={item.id} className="border-b border-zinc-900 hover:bg-zinc-900/40 transition">
-                                                <td className="py-3 px-4">
-                                                    <div className="font-bold text-white">{item.name}</div>
-                                                    <div className="text-[10px] text-zinc-500">{item.sku} | Supplier: {item.supplier || 'N/A'}</div>
-                                                </td>
+                                                <td className="py-3 px-4"><div className="font-bold text-white">{item.name}</div><div className="text-[10px] text-zinc-500">{item.sku} | Supplier: {item.supplier || 'N/A'}</div></td>
                                                 <td className="py-3 px-4 text-zinc-300">{item.category}</td>
                                                 <td className="py-3 px-4 text-zinc-500 font-mono text-[10px]">{item.batchNo}</td>
-                                                <td className="py-3 px-4 font-bold text-white">
-                                                    {item.stock} <span className="text-[10px] text-zinc-500 font-normal">units</span>
-                                                </td>
-                                                <td className="py-3 px-4">
-                                                    <div className="text-zinc-500 line-through text-[10px]">₹{item.costPrice}</div>
-                                                    <div className="text-emerald-400 font-bold">₹{item.sellingPrice}</div>
-                                                </td>
+                                                <td className="py-3 px-4 font-bold text-white">{item.stock} <span className="text-[10px] text-zinc-500 font-normal">units</span></td>
+                                                <td className="py-3 px-4"><div className="text-zinc-500 line-through text-[10px]">₹{item.costPrice}</div><div className="text-emerald-400 font-bold">₹{item.sellingPrice}</div></td>
                                                 <td className="py-3 px-4 text-blue-400 font-bold">{margin}%</td>
                                                 <td className="py-3 px-4">
-                                                    <span className={`px-2 py-0.5 border text-[10px] uppercase font-bold ${isOut ? 'bg-red-950 text-red-400 border-red-900' :
-                                                        isLow ? 'bg-amber-950 text-amber-400 border-amber-900' :
-                                                            'bg-emerald-950 text-emerald-400 border-emerald-900'
-                                                        }`}>
+                                                    <span className={`px-2 py-0.5 border text-[10px] uppercase font-bold ${isOut ? 'bg-red-950 text-red-400 border-red-900' : isLow ? 'bg-amber-950 text-amber-400 border-amber-900' : 'bg-emerald-950 text-emerald-400 border-emerald-900'}`}>
                                                         {isOut ? 'Out of Stock' : isLow ? 'Low Stock' : 'Optimal'}
                                                     </span>
                                                 </td>
                                                 <td className="py-3 px-4 text-right flex items-center justify-end gap-1.5">
-                                                    <button onClick={() => updateStock(item.id, 1)} className="p-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded" title="Increment Stock (+1)">
-                                                        <Plus className="h-3.5 w-3.5" />
-                                                    </button>
-                                                    <button onClick={() => updateStock(item.id, -1)} className="p-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded" title="Decrement Stock (-1)">
-                                                        <Minus className="h-3.5 w-3.5" />
-                                                    </button>
-                                                    <button onClick={() => deleteProduct(item.id, item.name)} className="p-1 bg-red-950 hover:bg-red-900 text-red-400 rounded" title="Delete Product">
-                                                        <Trash2 className="h-3.5 w-3.5" />
-                                                    </button>
+                                                    <button onClick={() => updateStock(item.id, 1)} className="p-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded" title="Increment Stock (+1)"><Plus className="h-3.5 w-3.5" /></button>
+                                                    <button onClick={() => updateStock(item.id, -1)} className="p-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded" title="Decrement Stock (-1)"><Minus className="h-3.5 w-3.5" /></button>
+                                                    <button onClick={() => deleteProduct(item.id, item.name)} className="p-1 bg-red-950 hover:bg-red-900 text-red-400 rounded" title="Delete Product"><Trash2 className="h-3.5 w-3.5" /></button>
                                                 </td>
                                             </tr>
                                         );
@@ -313,9 +249,7 @@ export default function SupplementDashboard() {
 
                 {/* Activity Transaction Log */}
                 <div className="bg-zinc-950 border border-zinc-800 p-4">
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-300 mb-3 flex items-center gap-2">
-                        <RefreshCw className="h-3.5 w-3.5 text-blue-400" /> Recent Inventory Audit Logs
-                    </h4>
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-300 mb-3 flex items-center gap-2"><RefreshCw className="h-3.5 w-3.5 text-blue-400" /> Recent Inventory Audit Logs</h4>
                     <div className="space-y-2">
                         {logs.map((log) => (
                             <div key={log.id} className="flex justify-between items-center bg-zinc-900/40 border border-zinc-900 p-2.5 text-xs">
@@ -323,9 +257,7 @@ export default function SupplementDashboard() {
                                     <span className={`px-1.5 py-0.5 text-[10px] font-bold ${log.quantityChange > 0 ? 'bg-emerald-950 text-emerald-400' : 'bg-red-950 text-red-400'}`}>
                                         {log.quantityChange > 0 ? `+${log.quantityChange}` : log.quantityChange}
                                     </span>
-                                    <div>
-                                        <span className="text-white font-bold">{log.productName}</span> — <span className="text-zinc-400">{log.action}</span>
-                                    </div>
+                                    <div><span className="text-white font-bold">{log.productName}</span> — <span className="text-zinc-400">{log.action}</span></div>
                                 </div>
                                 <span className="text-[10px] text-zinc-500">{log.timestamp}</span>
                             </div>
@@ -341,28 +273,15 @@ export default function SupplementDashboard() {
                                 <h3 className="text-sm font-bold text-white uppercase tracking-widest">Register New Supplement SKU</h3>
                                 <button onClick={() => setIsAddOpen(false)} className="text-zinc-500 hover:text-white text-xs">[ESC]</button>
                             </div>
-
                             <form onSubmit={handleAddProduct} className="space-y-3 text-xs">
                                 <div>
                                     <label className="block text-zinc-400 mb-1">Product Name</label>
-                                    <input
-                                        type="text"
-                                        placeholder="e.g. Whey Protein Isolate 2kg"
-                                        value={form.name}
-                                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                        className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        required
-                                    />
+                                    <input type="text" placeholder="e.g. Whey Protein Isolate 2kg" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600" required />
                                 </div>
-
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <label className="block text-zinc-400 mb-1">Category</label>
-                                        <select
-                                            value={form.category}
-                                            onChange={(e) => setForm({ ...form, category: e.target.value as any })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        >
+                                        <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value as any })} className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600">
                                             <option value="Protein">Protein</option>
                                             <option value="Performance">Performance</option>
                                             <option value="Wellness">Wellness</option>
@@ -371,90 +290,41 @@ export default function SupplementDashboard() {
                                     </div>
                                     <div>
                                         <label className="block text-zinc-400 mb-1">SKU Code</label>
-                                        <input
-                                            type="text"
-                                            placeholder="PRO-WHD-05"
-                                            value={form.sku}
-                                            onChange={(e) => setForm({ ...form, sku: e.target.value })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                            required
-                                        />
+                                        <input type="text" placeholder="PRO-WHD-05" value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600" required />
                                     </div>
                                 </div>
-
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <label className="block text-zinc-400 mb-1">Batch Number</label>
-                                        <input
-                                            type="text"
-                                            placeholder="BATCH-2026-Z"
-                                            value={form.batchNo}
-                                            onChange={(e) => setForm({ ...form, batchNo: e.target.value })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        />
+                                        <input type="text" placeholder="BATCH-2026-Z" value={form.batchNo} onChange={(e) => setForm({ ...form, batchNo: e.target.value })} className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600" />
                                     </div>
                                     <div>
                                         <label className="block text-zinc-400 mb-1">Supplier / Vendor</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Func Lab Health"
-                                            value={form.supplier}
-                                            onChange={(e) => setForm({ ...form, supplier: e.target.value })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        />
+                                        <input type="text" placeholder="Func Lab Health" value={form.supplier} onChange={(e) => setForm({ ...form, supplier: e.target.value })} className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600" />
                                     </div>
                                 </div>
-
                                 <div className="grid grid-cols-3 gap-3">
                                     <div>
                                         <label className="block text-zinc-400 mb-1">Initial Stock</label>
-                                        <input
-                                            type="number"
-                                            value={form.stock}
-                                            onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        />
+                                        <input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })} className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600" />
                                     </div>
                                     <div>
                                         <label className="block text-zinc-400 mb-1">Cost Price (₹)</label>
-                                        <input
-                                            type="number"
-                                            value={form.costPrice}
-                                            onChange={(e) => setForm({ ...form, costPrice: Number(e.target.value) })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        />
+                                        <input type="number" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: Number(e.target.value) })} className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600" />
                                     </div>
                                     <div>
                                         <label className="block text-zinc-400 mb-1">Selling Price (₹)</label>
-                                        <input
-                                            type="number"
-                                            value={form.sellingPrice}
-                                            onChange={(e) => setForm({ ...form, sellingPrice: Number(e.target.value) })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        />
+                                        <input type="number" value={form.sellingPrice} onChange={(e) => setForm({ ...form, sellingPrice: Number(e.target.value) })} className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600" />
                                     </div>
                                 </div>
-
                                 <div className="flex justify-end gap-2 pt-3 border-t border-zinc-800">
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsAddOpen(false)}
-                                        className="px-4 py-2 bg-zinc-900 text-zinc-400 hover:text-white uppercase tracking-wider"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="px-4 py-2 bg-white text-black font-bold uppercase tracking-wider hover:bg-zinc-200"
-                                    >
-                                        Save SKU
-                                    </button>
+                                    <button type="button" onClick={() => setIsAddOpen(false)} className="px-4 py-2 bg-zinc-900 text-zinc-400 hover:text-white uppercase tracking-wider">Cancel</button>
+                                    <button type="submit" className="px-4 py-2 bg-white text-black font-bold uppercase tracking-wider hover:bg-zinc-200">Save SKU</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 )}
-
             </div>
         </div>
     );
