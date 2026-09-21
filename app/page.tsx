@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { Dumbbell, Clock, MapPin, Phone, Mail, Globe, Share2, AtSign } from "lucide-react";
+import { Dumbbell, Clock, MapPin, Phone, Mail, Globe, Share2, AtSignimport SupplementDashboard from "@/components/SupplementDashboard";, } from "lucide-react";
 
 export default function Home() {
     return (
@@ -172,7 +172,16 @@ export default function Home() {
                         <Share2 className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
                         <AtSign className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
                     </div>
-                </div>
+                </div>{/* Supplement Stack Section */}
+                <section id="supplements" className="py-24 bg-black px-6">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="mb-12">
+                            <p className="text-emerald-400 font-bold tracking-widest uppercase text-xs mb-2">Inventory Management</p>
+                            <h2 className="text-4xl font-black uppercase tracking-tight">Supplement Stack Command Center</h2>
+                        </div>
+                        <SupplementDashboard />
+                    </div>
+                </section>
             </footer>
         </div>
     );
