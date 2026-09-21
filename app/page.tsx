@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { Dumbbell, Clock, MapPin, Phone, Mail, Instagram, Facebook, Twitter } from "lucide-react";
+import { Dumbbell, Clock, MapPin, Phone, Mail, Globe, Share2, AtSign } from "lucide-react";
 
 export default function Home() {
     return (
@@ -167,9 +167,10 @@ export default function Home() {
                 <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-zinc-900 flex justify-between items-center text-xs text-zinc-600">
                     <p>© 2026 Hitech Gym Studio. All rights reserved.</p>
                     <div className="flex gap-4">
-                        <Instagram className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
-                        <Facebook className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
-                        <Twitter className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
+                        {/* Replaced brand icons with generic ones to fix build error */}
+                        <Globe className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
+                        <Share2 className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
+                        <AtSign className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
                     </div>
                 </div>
             </footer>
