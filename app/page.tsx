@@ -1,461 +1,178 @@
 ﻿"use client";
 
-import { useState, useMemo } from "react";
-import {
-    Package, Plus, Minus, Trash2, Search, Filter,
-    AlertTriangle, TrendingUp, DollarSign, RefreshCw, Layers, ShieldCheck
-} from "lucide-react";
+import Link from "next/link";
+import { Dumbbell, Clock, MapPin, Phone, Mail, Instagram, Facebook, Twitter } from "lucide-react";
 
-interface SupplementItem {
-    id: number;
-    name: string;
-    category: "Protein" | "Performance" | "Wellness" | "Pre-Workout";
-    sku: string;
-    batchNo: string;
-    stock: number;
-    minThreshold: number;
-    costPrice: number;
-    sellingPrice: number;
-    supplier: string;
-}
-
-interface StockLog {
-    id: number;
-    timestamp: string;
-    productName: string;
-    action: string;
-    quantityChange: number;
-}
-
-export default function SupplementDashboard() {
-    // State management
-    const [supplements, setSupplements] = useState<SupplementItem[]>([
-        { id: 1, name: "Whey Protein Isolate 2kg", category: "Protein", sku: "PRO-WHD-01", batchNo: "BATCH-2026-A", stock: 15, minThreshold: 5, costPrice: 1900, sellingPrice: 2499, supplier: "Func Lab Health" },
-        { id: 2, name: "Creatine Monohydrate 250g", category: "Performance", sku: "PER-CRE-02", batchNo: "BATCH-2026-B", stock: 8, minThreshold: 4, costPrice: 650, sellingPrice: 899, supplier: "Aiwo Limited" },
-        { id: 3, name: "Omega-3 Triple Strength", category: "Wellness", sku: "WEL-OMG-03", batchNo: "BATCH-2025-X", stock: 3, minThreshold: 5, costPrice: 480, sellingPrice: 699, supplier: "Maxcare Wellness" },
-        { id: 4, name: "L-Citrulline Malate 200g", category: "Pre-Workout", sku: "PRE-CIT-04", batchNo: "BATCH-2026-C", stock: 0, minThreshold: 3, costPrice: 850, sellingPrice: 1199, supplier: "Kapiva Nutrients" }
-    ]);
-
-    const [logs, setLogs] = useState<StockLog[]>([
-        { id: 1, timestamp: "Today, 10:30 AM", productName: "Whey Protein Isolate 2kg", action: "Stock Added", quantityChange: 5 },
-        { id: 2, timestamp: "Yesterday, 04:15 PM", productName: "Creatine Monohydrate 250g", action: "Sale Recorded", quantityChange: -2 }
-    ]);
-
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState<string>("All");
-    const [isAddOpen, setIsAddOpen] = useState(false);
-
-    // Form state for new product
-    const [form, setForm] = useState({
-        name: "",
-        category: "Protein" as const,
-        sku: "",
-        batchNo: "",
-        stock: 10,
-        minThreshold: 3,
-        costPrice: 1000,
-        sellingPrice: 1499,
-        supplier: ""
-    });
-
-    // Computed metrics
-    const totalInventoryValue = useMemo(() => {
-        return supplements.reduce((acc, item) => acc + (item.stock * item.sellingPrice), 0);
-    }, [supplements]);
-
-    const totalStacks = useMemo(() => {
-        return supplements.reduce((acc, item) => acc + item.stock, 0);
-    }, [supplements]);
-
-    const lowStockCount = useMemo(() => {
-        return supplements.filter(item => item.stock <= item.minThreshold).length;
-    }, [supplements]);
-
-    const outOfStockCount = useMemo(() => {
-        return supplements.filter(item => item.stock === 0).length;
-    }, [supplements]);
-
-    // Filtered items
-    const filteredSupplements = useMemo(() => {
-        return supplements.filter(item => {
-            const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || item.sku.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchesCat = selectedCategory === "All" || item.category === selectedCategory;
-            return matchesSearch && matchesCat;
-        });
-    }, [supplements, searchQuery, selectedCategory]);
-
-    // Handlers
-    const handleAddProduct = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!form.name || !form.sku) return;
-
-        const newItem: SupplementItem = {
-            id: Date.now(),
-            ...form
-        };
-
-        setSupplements([newItem, ...supplements]);
-        setLogs([{
-            id: Date.now(),
-            timestamp: "Just now",
-            productName: form.name,
-            action: "New Product Initialized",
-            quantityChange: form.stock
-        }, ...logs]);
-
-        setIsAddOpen(false);
-        setForm({
-            name: "",
-            category: "Protein",
-            sku: "",
-            batchNo: "",
-            stock: 10,
-            minThreshold: 3,
-            costPrice: 1000,
-            sellingPrice: 1499,
-            supplier: ""
-        });
-    };
-
-    const updateStock = (id: number, delta: number) => {
-        setSupplements(supplements.map(item => {
-            if (item.id === id) {
-                const newStock = Math.max(0, item.stock + delta);
-                const diff = newStock - item.stock;
-                if (diff !== 0) {
-                    setLogs(prev => [{
-                        id: Date.now(),
-                        timestamp: "Just now",
-                        productName: item.name,
-                        action: diff > 0 ? "Stock Restocked" : "Stock Dispensed",
-                        quantityChange: diff
-                    }, ...prev]);
-                }
-                return { ...item, stock: newStock };
-            }
-            return item;
-        }));
-    };
-
-    const deleteProduct = (id: number, name: string) => {
-        setSupplements(supplements.filter(item => item.id !== id));
-        setLogs(prev => [{
-            id: Date.now(),
-            timestamp: "Just now",
-            productName: name,
-            action: "Product Deleted",
-            quantityChange: 0
-        }, ...prev]);
-    };
-
+export default function Home() {
     return (
-        <div className="min-h-screen bg-black text-white p-6 font-mono">
-            <div className="max-w-7xl mx-auto space-y-6">
+        <div className="min-h-screen bg-black text-white font-sans selection:bg-emerald-500 selection:text-black">
+            {/* Navbar */}
+            <nav className="fixed top-0 w-full bg-black/80 backdrop-blur-md border-b border-zinc-800 z-50">
+                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Dumbbell className="h-8 w-8 text-emerald-400" />
+                        <span className="text-xl font-bold tracking-wider uppercase">Hitech Gym Studio</span>
+                    </div>
+                    <div className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
+                        <Link href="#" className="hover:text-emerald-400 transition">Home</Link>
+                        <Link href="#about" className="hover:text-emerald-400 transition">About</Link>
+                        <Link href="#membership" className="hover:text-emerald-400 transition">Membership</Link>
+                        <Link href="#gallery" className="hover:text-emerald-400 transition">Gallery</Link>
+                        <Link href="/supplement" className="bg-emerald-500 text-black px-4 py-2 rounded font-bold hover:bg-emerald-400 transition">
+                            Supplement Store
+                        </Link>
+                    </div>
+                </div>
+            </nav>
 
-                {/* Header */}
-                <header className="border-b border-zinc-800 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
+            {/* Hero Section */}
+            <section className="relative h-screen flex items-center justify-center text-center px-4">
+                <div className="absolute inset-0 bg-[url('/gym-1.jpg')] bg-cover bg-center opacity-40"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
+                <div className="relative z-10 max-w-4xl mx-auto space-y-6">
+                    <p className="text-emerald-400 font-bold tracking-widest uppercase text-sm">Welcome to Hitech Gym Studio</p>
+                    <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-tight">
+                        Transform Your Body <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">At Hitech Gym Studio</span>
+                    </h1>
+                    <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
+                        Heavy strength training, cardio, and expert coaching under one roof in Kishkindha. High-quality equipment for maximum results.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                        <button className="bg-white text-black font-bold px-8 py-4 uppercase tracking-widest hover:bg-zinc-200 transition">
+                            Book Free Trial
+                        </button>
+                        <button className="border border-zinc-700 text-white font-bold px-8 py-4 uppercase tracking-widest hover:bg-zinc-900 transition">
+                            Watch Tour Video
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            {/* Gallery Section */}
+            <section id="gallery" className="py-24 bg-zinc-950 px-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="mb-12">
+                        <p className="text-emerald-400 font-bold tracking-widest uppercase text-xs mb-2">Take A Look Inside</p>
+                        <h2 className="text-4xl font-black uppercase tracking-tight">Studio Gallery</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {[
+                            { img: "gym-1.jpg", title: "Main Strength Area" },
+                            { img: "gym-2.jpg", title: "Functional Training Zone" },
+                            { img: "gym-3.jpg", title: "Cardio Section" },
+                            { img: "gym-4.jpg", title: "Free Weights Area" },
+                            { img: "gym-5.jpg", title: "CrossFit Zone" },
+                            { img: "gym-6.jpg", title: "Yoga & Stretching" },
+                            { img: "gym-7.jpg", title: "Locker Rooms" },
+                        ].map((item, i) => (
+                            <div key={i} className="relative group overflow-hidden h-64">
+                                <img src={`/${item.img}`} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent"></div>
+                                <p className="absolute bottom-4 left-4 font-bold text-sm uppercase tracking-wider">{item.title}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Membership Section */}
+            <section id="membership" className="py-24 bg-black px-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16">
+                        <p className="text-emerald-400 font-bold tracking-widest uppercase text-xs mb-2">Membership Packages</p>
+                        <h2 className="text-4xl font-black uppercase tracking-tight">Choose Your Plan</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                        {/* Plan 1 */}
+                        <div className="border border-zinc-800 p-8 space-y-6 hover:border-emerald-500 transition">
+                            <h3 className="text-xl font-bold uppercase">Strength Plan</h3>
+                            <div className="text-4xl font-black">₹1,200<span className="text-sm text-zinc-500 font-normal">/month</span></div>
+                            <ul className="space-y-3 text-sm text-zinc-400">
+                                <li className="flex items-center gap-2">✓ Full Gym Access</li>
+                                <li className="flex items-center gap-2">✓ Locker Room Access</li>
+                                <li className="flex items-center gap-2">✓ Cardio Area Access</li>
+                            </ul>
+                            <button className="w-full border border-zinc-700 py-3 uppercase text-sm font-bold hover:bg-zinc-900 transition">Join Monthly</button>
+                        </div>
+                        {/* Plan 2 */}
+                        <div className="border-2 border-emerald-500 p-8 space-y-6 relative bg-zinc-950">
+                            <div className="absolute top-0 right-0 bg-emerald-500 text-black text-xs font-bold px-3 py-1 uppercase tracking-wider">Most Popular</div>
+                            <h3 className="text-xl font-bold uppercase text-emerald-400">Optimal Plan</h3>
+                            <div className="text-4xl font-black">₹3,200<span className="text-sm text-zinc-500 font-normal">/3 months</span></div>
+                            <ul className="space-y-3 text-sm text-zinc-400">
+                                <li className="flex items-center gap-2">✓ Everything in Monthly</li>
+                                <li className="flex items-center gap-2">✓ Personalized Diet Plan</li>
+                                <li className="flex items-center gap-2">✓ Group Training Classes</li>
+                            </ul>
+                            <button className="w-full bg-emerald-500 text-black py-3 uppercase text-sm font-bold hover:bg-emerald-400 transition">Join Quarterly</button>
+                        </div>
+                        {/* Plan 3 */}
+                        <div className="border border-zinc-800 p-8 space-y-6 hover:border-emerald-500 transition">
+                            <h3 className="text-xl font-bold uppercase">Beast Mode</h3>
+                            <div className="text-4xl font-black">₹6,000<span className="text-sm text-zinc-500 font-normal">/6 months</span></div>
+                            <ul className="space-y-3 text-sm text-zinc-400">
+                                <li className="flex items-center gap-2">✓ Everything in Quarterly</li>
+                                <li className="flex items-center gap-2">✓ Personal Trainer</li>
+                                <li className="flex items-center gap-2">✓ Supplement Discount</li>
+                            </ul>
+                            <button className="w-full border border-zinc-700 py-3 uppercase text-sm font-bold hover:bg-zinc-900 transition">Join Half-Yearly</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Gym Capacity Section */}
+            <section className="py-24 bg-zinc-950 px-6">
+                <div className="max-w-4xl mx-auto text-center">
+                    <h2 className="text-3xl font-black uppercase tracking-tight mb-2">Gym Capacity: <span className="text-emerald-400">Normal (Spacious)</span></h2>
+                    <p className="text-zinc-500 text-sm mb-12">Live updates on current gym occupancy</p>
+                    <div className="flex items-end justify-center gap-4 h-48">
+                        {[30, 45, 60, 40, 35, 55, 70, 50].map((height, i) => (
+                            <div key={i} className="w-12 bg-zinc-800 relative group">
+                                <div className="absolute bottom-0 w-full bg-emerald-500 transition-all duration-500" style={{ height: `${height}%` }}></div>
+                                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-zinc-500">{i * 3 + 6}AM</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="bg-black border-t border-zinc-800 py-12 px-6">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="space-y-4">
                         <div className="flex items-center gap-2">
-                            <ShieldCheck className="h-6 w-6 text-emerald-400" />
-                            <h1 className="text-xl font-bold tracking-wider uppercase">Hitech Gym Studio // Supplement Stack Command Center</h1>
+                            <Dumbbell className="h-6 w-6 text-emerald-400" />
+                            <span className="text-lg font-bold tracking-wider uppercase">Hitech Gym Studio</span>
                         </div>
-                        <p className="text-xs text-zinc-500 mt-1">Real-time inventory valuation, stock threshold monitoring, and fulfillment logs.</p>
+                        <p className="text-zinc-500 text-sm">Kishkindha's premier strength facility. Heavy weights, expert coaching, and a community that pushes you.</p>
                     </div>
-                    <button
-                        onClick={() => setIsAddOpen(true)}
-                        className="bg-white text-black font-bold px-4 py-2 text-xs uppercase tracking-widest hover:bg-zinc-200 transition flex items-center gap-2"
-                    >
-                        <Plus className="h-4 w-4" /> Add New Supplement
-                    </button>
-                </header>
-
-                {/* Analytics Metric Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="bg-zinc-950 border border-zinc-800 p-4 space-y-2">
-                        <div className="flex justify-between items-center text-zinc-400 text-xs uppercase">
-                            <span>Total Portfolio Value</span>
-                            <DollarSign className="h-4 w-4 text-emerald-400" />
-                        </div>
-                        <div className="text-2xl font-bold text-white">₹{totalInventoryValue.toLocaleString()}</div>
-                        <div className="text-[10px] text-emerald-400 flex items-center gap-1">
-                            <TrendingUp className="h-3 w-3" /> Projected Retail Revenue
+                    <div className="space-y-4">
+                        <h4 className="font-bold uppercase tracking-wider text-sm">Opening Hours</h4>
+                        <div className="text-zinc-500 text-sm space-y-2">
+                            <p className="flex items-center gap-2"><Clock className="h-4 w-4" /> Mon - Sat: 6:00 AM - 10:00 PM</p>
+                            <p className="flex items-center gap-2"><Clock className="h-4 w-4" /> Sunday: 8:00 AM - 2:00 PM</p>
                         </div>
                     </div>
-
-                    <div className="bg-zinc-950 border border-zinc-800 p-4 space-y-2">
-                        <div className="flex justify-between items-center text-zinc-400 text-xs uppercase">
-                            <span>Total Stacks Available</span>
-                            <Package className="h-4 w-4 text-blue-400" />
+                    <div className="space-y-4">
+                        <h4 className="font-bold uppercase tracking-wider text-sm">Location & Contact</h4>
+                        <div className="text-zinc-500 text-sm space-y-2">
+                            <p className="flex items-center gap-2"><MapPin className="h-4 w-4" /> 123 Fitness Street, Kishkindha</p>
+                            <p className="flex items-center gap-2"><Phone className="h-4 w-4" /> +91 98765 43210</p>
+                            <p className="flex items-center gap-2"><Mail className="h-4 w-4" /> hello@hitechgym.com</p>
                         </div>
-                        <div className="text-2xl font-bold text-white">{totalStacks} Units</div>
-                        <div className="text-[10px] text-zinc-400">Across {supplements.length} Active SKUs</div>
-                    </div>
-
-                    <div className="bg-zinc-950 border border-zinc-800 p-4 space-y-2">
-                        <div className="flex justify-between items-center text-zinc-400 text-xs uppercase">
-                            <span>Low Stock Alerts</span>
-                            <AlertTriangle className="h-4 w-4 text-amber-400" />
-                        </div>
-                        <div className="text-2xl font-bold text-amber-400">{lowStockCount} Items</div>
-                        <div className="text-[10px] text-zinc-400">Below minimum safety threshold</div>
-                    </div>
-
-                    <div className="bg-zinc-950 border border-zinc-800 p-4 space-y-2">
-                        <div className="flex justify-between items-center text-zinc-400 text-xs uppercase">
-                            <span>Out of Stock</span>
-                            <Layers className="h-4 w-4 text-red-500" />
-                        </div>
-                        <div className="text-2xl font-bold text-red-500">{outOfStockCount} Items</div>
-                        <div className="text-[10px] text-red-400">Requires immediate restock order</div>
                     </div>
                 </div>
-
-                {/* Controls & Filters Bar */}
-                <div className="flex flex-col md:flex-row justify-between gap-4 bg-zinc-950 border border-zinc-800 p-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
-                        <input
-                            type="text"
-                            placeholder="Search by product name or SKU..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-zinc-900 border border-zinc-800 pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-600"
-                        />
-                    </div>
-                    <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-                        <Filter className="h-4 w-4 text-zinc-500 shrink-0" />
-                        {["All", "Protein", "Performance", "Wellness", "Pre-Workout"].map((cat) => (
-                            <button
-                                key={cat}
-                                onClick={() => setSelectedCategory(cat)}
-                                className={`px-3 py-1.5 text-xs uppercase tracking-wider shrink-0 transition ${selectedCategory === cat ? 'bg-white text-black font-bold' : 'bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800'}`}
-                            >
-                                {cat}
-                            </button>
-                        ))}
+                <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-zinc-900 flex justify-between items-center text-xs text-zinc-600">
+                    <p>© 2026 Hitech Gym Studio. All rights reserved.</p>
+                    <div className="flex gap-4">
+                        <Instagram className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
+                        <Facebook className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
+                        <Twitter className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
                     </div>
                 </div>
-
-                {/* Main Data Table */}
-                <div className="bg-zinc-950 border border-zinc-800 overflow-hidden">
-                    <div className="p-4 border-b border-zinc-800 flex justify-between items-center">
-                        <h3 className="text-sm font-bold uppercase tracking-wider text-white">Supplement Inventory Matrix</h3>
-                        <span className="text-xs text-zinc-500">Showing {filteredSupplements.length} of {supplements.length} records</span>
-                    </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs text-zinc-400">
-                            <thead className="border-b border-zinc-800 text-zinc-200 uppercase bg-zinc-900/50">
-                                <tr>
-                                    <th className="py-3 px-4">Product Name & SKU</th>
-                                    <th className="py-3 px-4">Category</th>
-                                    <th className="py-3 px-4">Batch No</th>
-                                    <th className="py-3 px-4">Stock Units</th>
-                                    <th className="py-3 px-4">Cost / Sell Price</th>
-                                    <th className="py-3 px-4">Margin</th>
-                                    <th className="py-3 px-4">Status</th>
-                                    <th className="py-3 px-4 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredSupplements.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={8} className="py-8 text-center text-zinc-500">No supplement items found matching criteria.</td>
-                                    </tr>
-                                ) : (
-                                    filteredSupplements.map((item) => {
-                                        const margin = Math.round(((item.sellingPrice - item.costPrice) / item.sellingPrice) * 100);
-                                        const isOut = item.stock === 0;
-                                        const isLow = item.stock <= item.minThreshold && !isOut;
-
-                                        return (
-                                            <tr key={item.id} className="border-b border-zinc-900 hover:bg-zinc-900/40 transition">
-                                                <td className="py-3 px-4">
-                                                    <div className="font-bold text-white">{item.name}</div>
-                                                    <div className="text-[10px] text-zinc-500">{item.sku} | Supplier: {item.supplier || 'N/A'}</div>
-                                                </td>
-                                                <td className="py-3 px-4 text-zinc-300">{item.category}</td>
-                                                <td className="py-3 px-4 text-zinc-500 font-mono text-[10px]">{item.batchNo}</td>
-                                                <td className="py-3 px-4 font-bold text-white">
-                                                    {item.stock} <span className="text-[10px] text-zinc-500 font-normal">units</span>
-                                                </td>
-                                                <td className="py-3 px-4">
-                                                    <div className="text-zinc-500 line-through text-[10px]">₹{item.costPrice}</div>
-                                                    <div className="text-emerald-400 font-bold">₹{item.sellingPrice}</div>
-                                                </td>
-                                                <td className="py-3 px-4 text-blue-400 font-bold">{margin}%</td>
-                                                <td className="py-3 px-4">
-                                                    <span className={`px-2 py-0.5 border text-[10px] uppercase font-bold ${isOut ? 'bg-red-950 text-red-400 border-red-900' :
-                                                        isLow ? 'bg-amber-950 text-amber-400 border-amber-900' :
-                                                            'bg-emerald-950 text-emerald-400 border-emerald-900'
-                                                        }`}>
-                                                        {isOut ? 'Out of Stock' : isLow ? 'Low Stock' : 'Optimal'}
-                                                    </span>
-                                                </td>
-                                                <td className="py-3 px-4 text-right flex items-center justify-end gap-1.5">
-                                                    <button onClick={() => updateStock(item.id, 1)} className="p-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded" title="Increment Stock (+1)">
-                                                        <Plus className="h-3.5 w-3.5" />
-                                                    </button>
-                                                    <button onClick={() => updateStock(item.id, -1)} className="p-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded" title="Decrement Stock (-1)">
-                                                        <Minus className="h-3.5 w-3.5" />
-                                                    </button>
-                                                    <button onClick={() => deleteProduct(item.id, item.name)} className="p-1 bg-red-950 hover:bg-red-900 text-red-400 rounded" title="Delete Product">
-                                                        <Trash2 className="h-3.5 w-3.5" />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {/* Activity Transaction Log */}
-                <div className="bg-zinc-950 border border-zinc-800 p-4">
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-300 mb-3 flex items-center gap-2">
-                        <RefreshCw className="h-3.5 w-3.5 text-blue-400" /> Recent Inventory Audit Logs
-                    </h4>
-                    <div className="space-y-2">
-                        {logs.map((log) => (
-                            <div key={log.id} className="flex justify-between items-center bg-zinc-900/40 border border-zinc-900 p-2.5 text-xs">
-                                <div className="flex items-center gap-3">
-                                    <span className={`px-1.5 py-0.5 text-[10px] font-bold ${log.quantityChange > 0 ? 'bg-emerald-950 text-emerald-400' : 'bg-red-950 text-red-400'}`}>
-                                        {log.quantityChange > 0 ? `+${log.quantityChange}` : log.quantityChange}
-                                    </span>
-                                    <div>
-                                        <span className="text-white font-bold">{log.productName}</span> — <span className="text-zinc-400">{log.action}</span>
-                                    </div>
-                                </div>
-                                <span className="text-[10px] text-zinc-500">{log.timestamp}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Add Supplement Modal Form */}
-                {isAddOpen && (
-                    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-                        <div className="bg-zinc-950 border border-zinc-800 p-6 max-w-lg w-full space-y-4">
-                            <div className="flex justify-between items-center border-b border-zinc-800 pb-3">
-                                <h3 className="text-sm font-bold text-white uppercase tracking-widest">Register New Supplement SKU</h3>
-                                <button onClick={() => setIsAddOpen(false)} className="text-zinc-500 hover:text-white text-xs">[ESC]</button>
-                            </div>
-
-                            <form onSubmit={handleAddProduct} className="space-y-3 text-xs">
-                                <div>
-                                    <label className="block text-zinc-400 mb-1">Product Name</label>
-                                    <input
-                                        type="text"
-                                        placeholder="e.g. Whey Protein Isolate 2kg"
-                                        value={form.name}
-                                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                        className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        required
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label className="block text-zinc-400 mb-1">Category</label>
-                                        <select
-                                            value={form.category}
-                                            onChange={(e) => setForm({ ...form, category: e.target.value as any })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        >
-                                            <option value="Protein">Protein</option>
-                                            <option value="Performance">Performance</option>
-                                            <option value="Wellness">Wellness</option>
-                                            <option value="Pre-Workout">Pre-Workout</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-zinc-400 mb-1">SKU Code</label>
-                                        <input
-                                            type="text"
-                                            placeholder="PRO-WHD-05"
-                                            value={form.sku}
-                                            onChange={(e) => setForm({ ...form, sku: e.target.value })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                            required
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label className="block text-zinc-400 mb-1">Batch Number</label>
-                                        <input
-                                            type="text"
-                                            placeholder="BATCH-2026-Z"
-                                            value={form.batchNo}
-                                            onChange={(e) => setForm({ ...form, batchNo: e.target.value })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-zinc-400 mb-1">Supplier / Vendor</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Func Lab Health"
-                                            value={form.supplier}
-                                            onChange={(e) => setForm({ ...form, supplier: e.target.value })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-3 gap-3">
-                                    <div>
-                                        <label className="block text-zinc-400 mb-1">Initial Stock</label>
-                                        <input
-                                            type="number"
-                                            value={form.stock}
-                                            onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-zinc-400 mb-1">Cost Price (₹)</label>
-                                        <input
-                                            type="number"
-                                            value={form.costPrice}
-                                            onChange={(e) => setForm({ ...form, costPrice: Number(e.target.value) })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-zinc-400 mb-1">Selling Price (₹)</label>
-                                        <input
-                                            type="number"
-                                            value={form.sellingPrice}
-                                            onChange={(e) => setForm({ ...form, sellingPrice: Number(e.target.value) })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white focus:outline-none focus:border-zinc-600"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="flex justify-end gap-2 pt-3 border-t border-zinc-800">
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsAddOpen(false)}
-                                        className="px-4 py-2 bg-zinc-900 text-zinc-400 hover:text-white uppercase tracking-wider"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="px-4 py-2 bg-white text-black font-bold uppercase tracking-wider hover:bg-zinc-200"
-                                    >
-                                        Save SKU
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                )}
-
-            </div>
+            </footer>
         </div>
     );
 }

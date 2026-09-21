@@ -63,7 +63,6 @@ export default function SupplementDashboard() {
         return supplements.reduce((acc, item) => acc + (item.stock * item.sellingPrice), 0);
     }, [supplements]);
 
-    // NEW: Total Stacks (Total quantity of all supplements combined)
     const totalStacks = useMemo(() => {
         return supplements.reduce((acc, item) => acc + item.stock, 0);
     }, [supplements]);
