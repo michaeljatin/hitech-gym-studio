@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Dumbbell, Clock, MapPin, Phone, Mail, Globe, Share2, AtSign } from "lucide-react";
-import SupplementDashboard from "@/components/SupplementDashboard"; // Imported Dashboard
+import SupplementDashboard from "../components/SupplementDashboard"; // Corrected Path
 
 export default function Home() {
     return (
@@ -16,10 +16,9 @@ export default function Home() {
                     </div>
                     <div className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
                         <Link href="#" className="hover:text-emerald-400 transition">Home</Link>
-                        <Link href="#about" className="hover:text-emerald-400 transition">About</Link>
                         <Link href="#membership" className="hover:text-emerald-400 transition">Membership</Link>
                         <Link href="#gallery" className="hover:text-emerald-400 transition">Gallery</Link>
-                        <Link href="/supplement" className="bg-emerald-500 text-black px-4 py-2 rounded font-bold hover:bg-emerald-400 transition">
+                        <Link href="#supplements" className="bg-emerald-500 text-black px-4 py-2 rounded font-bold hover:bg-emerald-400 transition">
                             Supplement Store
                         </Link>
                     </div>
@@ -37,15 +36,11 @@ export default function Home() {
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">At Hitech Gym Studio</span>
                     </h1>
                     <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-                        Heavy strength training, cardio, and expert coaching under one roof in Kishkindha. High-quality equipment for maximum results.
+                        Heavy strength training, cardio, and expert coaching under one roof in Kishkindha.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-                        <button className="bg-white text-black font-bold px-8 py-4 uppercase tracking-widest hover:bg-zinc-200 transition">
-                            Book Free Trial
-                        </button>
-                        <button className="border border-zinc-700 text-white font-bold px-8 py-4 uppercase tracking-widest hover:bg-zinc-900 transition">
-                            Watch Tour Video
-                        </button>
+                        <button className="bg-white text-black font-bold px-8 py-4 uppercase tracking-widest hover:bg-zinc-200 transition">Book Free Trial</button>
+                        <button className="border border-zinc-700 text-white font-bold px-8 py-4 uppercase tracking-widest hover:bg-zinc-900 transition">Watch Tour Video</button>
                     </div>
                 </div>
             </section>
@@ -58,19 +53,10 @@ export default function Home() {
                         <h2 className="text-4xl font-black uppercase tracking-tight">Studio Gallery</h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {[
-                            { img: "gym-1.jpg", title: "Main Strength Area" },
-                            { img: "gym-2.jpg", title: "Functional Training Zone" },
-                            { img: "gym-3.jpg", title: "Cardio Section" },
-                            { img: "gym-4.jpg", title: "Free Weights Area" },
-                            { img: "gym-5.jpg", title: "CrossFit Zone" },
-                            { img: "gym-6.jpg", title: "Yoga & Stretching" },
-                            { img: "gym-7.jpg", title: "Locker Rooms" },
-                        ].map((item, i) => (
+                        {["gym-1.jpg", "gym-2.jpg", "gym-3.jpg", "gym-4.jpg", "gym-5.jpg", "gym-6.jpg", "gym-7.jpg"].map((img, i) => (
                             <div key={i} className="relative group overflow-hidden h-64">
-                                <img src={`/${item.img}`} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+                                <img src={`/${img}`} alt={`Gallery ${i}`} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent"></div>
-                                <p className="absolute bottom-4 left-4 font-bold text-sm uppercase tracking-wider">{item.title}</p>
                             </div>
                         ))}
                     </div>
@@ -85,38 +71,19 @@ export default function Home() {
                         <h2 className="text-4xl font-black uppercase tracking-tight">Choose Your Plan</h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                        {/* Plan 1 */}
                         <div className="border border-zinc-800 p-8 space-y-6 hover:border-emerald-500 transition">
                             <h3 className="text-xl font-bold uppercase">Strength Plan</h3>
                             <div className="text-4xl font-black">₹1,200<span className="text-sm text-zinc-500 font-normal">/month</span></div>
-                            <ul className="space-y-3 text-sm text-zinc-400">
-                                <li className="flex items-center gap-2">✓ Full Gym Access</li>
-                                <li className="flex items-center gap-2">✓ Locker Room Access</li>
-                                <li className="flex items-center gap-2">✓ Cardio Area Access</li>
-                            </ul>
                             <button className="w-full border border-zinc-700 py-3 uppercase text-sm font-bold hover:bg-zinc-900 transition">Join Monthly</button>
                         </div>
-                        {/* Plan 2 */}
                         <div className="border-2 border-emerald-500 p-8 space-y-6 relative bg-zinc-950">
-                            <div className="absolute top-0 right-0 bg-emerald-500 text-black text-xs font-bold px-3 py-1 uppercase tracking-wider">Most Popular</div>
                             <h3 className="text-xl font-bold uppercase text-emerald-400">Optimal Plan</h3>
                             <div className="text-4xl font-black">₹3,200<span className="text-sm text-zinc-500 font-normal">/3 months</span></div>
-                            <ul className="space-y-3 text-sm text-zinc-400">
-                                <li className="flex items-center gap-2">✓ Everything in Monthly</li>
-                                <li className="flex items-center gap-2">✓ Personalized Diet Plan</li>
-                                <li className="flex items-center gap-2">✓ Group Training Classes</li>
-                            </ul>
                             <button className="w-full bg-emerald-500 text-black py-3 uppercase text-sm font-bold hover:bg-emerald-400 transition">Join Quarterly</button>
                         </div>
-                        {/* Plan 3 */}
                         <div className="border border-zinc-800 p-8 space-y-6 hover:border-emerald-500 transition">
                             <h3 className="text-xl font-bold uppercase">Beast Mode</h3>
                             <div className="text-4xl font-black">₹6,000<span className="text-sm text-zinc-500 font-normal">/6 months</span></div>
-                            <ul className="space-y-3 text-sm text-zinc-400">
-                                <li className="flex items-center gap-2">✓ Everything in Quarterly</li>
-                                <li className="flex items-center gap-2">✓ Personal Trainer</li>
-                                <li className="flex items-center gap-2">✓ Supplement Discount</li>
-                            </ul>
                             <button className="w-full border border-zinc-700 py-3 uppercase text-sm font-bold hover:bg-zinc-900 transition">Join Half-Yearly</button>
                         </div>
                     </div>
@@ -127,12 +94,10 @@ export default function Home() {
             <section className="py-24 bg-zinc-950 px-6">
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-3xl font-black uppercase tracking-tight mb-2">Gym Capacity: <span className="text-emerald-400">Normal (Spacious)</span></h2>
-                    <p className="text-zinc-500 text-sm mb-12">Live updates on current gym occupancy</p>
-                    <div className="flex items-end justify-center gap-4 h-48">
+                    <div className="flex items-end justify-center gap-4 h-48 mt-12">
                         {[30, 45, 60, 40, 35, 55, 70, 50].map((height, i) => (
-                            <div key={i} className="w-12 bg-zinc-800 relative group">
-                                <div className="absolute bottom-0 w-full bg-emerald-500 transition-all duration-500" style={{ height: `${height}%` }}></div>
-                                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-zinc-500">{i * 3 + 6}AM</span>
+                            <div key={i} className="w-12 bg-zinc-800 relative">
+                                <div className="absolute bottom-0 w-full bg-emerald-500" style={{ height: `${height}%` }}></div>
                             </div>
                         ))}
                     </div>
@@ -142,7 +107,7 @@ export default function Home() {
             {/* ================= SUPPLEMENT DASHBOARD SECTION ================= */}
             <section id="supplements" className="py-24 bg-black px-6 border-t border-zinc-800">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-12">
+                    <div className="mb-12 text-center">
                         <p className="text-emerald-400 font-bold tracking-widest uppercase text-xs mb-2">Inventory Management</p>
                         <h2 className="text-4xl font-black uppercase tracking-tight">Supplement Stack Command Center</h2>
                     </div>
@@ -159,13 +124,12 @@ export default function Home() {
                             <Dumbbell className="h-6 w-6 text-emerald-400" />
                             <span className="text-lg font-bold tracking-wider uppercase">Hitech Gym Studio</span>
                         </div>
-                        <p className="text-zinc-500 text-sm">Kishkindha's premier strength facility. Heavy weights, expert coaching, and a community that pushes you.</p>
+                        <p className="text-zinc-500 text-sm">Kishkindha's premier strength facility.</p>
                     </div>
                     <div className="space-y-4">
                         <h4 className="font-bold uppercase tracking-wider text-sm">Opening Hours</h4>
                         <div className="text-zinc-500 text-sm space-y-2">
                             <p className="flex items-center gap-2"><Clock className="h-4 w-4" /> Mon - Sat: 6:00 AM - 10:00 PM</p>
-                            <p className="flex items-center gap-2"><Clock className="h-4 w-4" /> Sunday: 8:00 AM - 2:00 PM</p>
                         </div>
                     </div>
                     <div className="space-y-4">
@@ -173,7 +137,6 @@ export default function Home() {
                         <div className="text-zinc-500 text-sm space-y-2">
                             <p className="flex items-center gap-2"><MapPin className="h-4 w-4" /> 123 Fitness Street, Kishkindha</p>
                             <p className="flex items-center gap-2"><Phone className="h-4 w-4" /> +91 98765 43210</p>
-                            <p className="flex items-center gap-2"><Mail className="h-4 w-4" /> hello@hitechgym.com</p>
                         </div>
                     </div>
                 </div>
