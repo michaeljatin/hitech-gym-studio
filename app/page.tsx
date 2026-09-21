@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { Dumbbell, Clock, MapPin, Phone, Mail, Globe, Share2, AtSignimport SupplementDashboard from "@/components/SupplementDashboard";, } from "lucide-react";
+import { Dumbbell, Clock, MapPin, Phone, Mail, Globe, Share2, AtSign } from "lucide-react";
+import SupplementDashboard from "@/components/SupplementDashboard"; // Imported Dashboard
 
 export default function Home() {
     return (
@@ -26,7 +27,7 @@ export default function Home() {
             </nav>
 
             {/* Hero Section */}
-            <section className="relative h-screen flex items-center justify-center text-center px-4">
+            <section className="relative h-screen flex items-center justify-center text-center px-4 pt-20">
                 <div className="absolute inset-0 bg-[url('/gym-1.jpg')] bg-cover bg-center opacity-40"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
                 <div className="relative z-10 max-w-4xl mx-auto space-y-6">
@@ -138,6 +139,18 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* ================= SUPPLEMENT DASHBOARD SECTION ================= */}
+            <section id="supplements" className="py-24 bg-black px-6 border-t border-zinc-800">
+                <div className="max-w-7xl mx-auto">
+                    <div className="mb-12">
+                        <p className="text-emerald-400 font-bold tracking-widest uppercase text-xs mb-2">Inventory Management</p>
+                        <h2 className="text-4xl font-black uppercase tracking-tight">Supplement Stack Command Center</h2>
+                    </div>
+                    <SupplementDashboard />
+                </div>
+            </section>
+            {/* ================================================================= */}
+
             {/* Footer */}
             <footer className="bg-black border-t border-zinc-800 py-12 px-6">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -167,21 +180,11 @@ export default function Home() {
                 <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-zinc-900 flex justify-between items-center text-xs text-zinc-600">
                     <p>© 2026 Hitech Gym Studio. All rights reserved.</p>
                     <div className="flex gap-4">
-                        {/* Replaced brand icons with generic ones to fix build error */}
                         <Globe className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
                         <Share2 className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
                         <AtSign className="h-4 w-4 hover:text-emerald-400 cursor-pointer" />
                     </div>
-                </div>{/* Supplement Stack Section */}
-                <section id="supplements" className="py-24 bg-black px-6">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="mb-12">
-                            <p className="text-emerald-400 font-bold tracking-widest uppercase text-xs mb-2">Inventory Management</p>
-                            <h2 className="text-4xl font-black uppercase tracking-tight">Supplement Stack Command Center</h2>
-                        </div>
-                        <SupplementDashboard />
-                    </div>
-                </section>
+                </div>
             </footer>
         </div>
     );
