@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Dumbbell, Clock, MapPin, Phone, Mail, Globe, Share2, AtSign } from "lucide-react";
-import SupplementDashboard from "../components/SupplementDashboard"; // Corrected Path
+import SupplementDashboard from "@/components/SupplementDashboard"; // Corrected Path
 
 export default function Home() {
     return (
