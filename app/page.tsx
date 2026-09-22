@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import React, { useState, useEffect } from "react";
-import { Dumbbell, Phone, MapPin, Clock, Play, X, Check, Users, TrendingUp, LogOut, User, QrCode, ScanLine, Printer, Package, Plus, Minus, ArrowRightLeft, Trash2, Award, Gift, Share2, Trophy, Star, Copy, Flame } from "lucide-react";
+import { Dumbbell, Phone, MapPin, Clock, Play, X, Check, Users, TrendingUp, LogOut, User, QrCode, ScanLine, Printer, Package, Plus, Minus, ArrowRightLeft, Trash2, Award, Gift, Share2, Trophy, Star, Copy, Flame, IndianRupee, BadgePercent } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -43,6 +43,15 @@ export default function GymLandingPage() {
         referralEarnings: 200,
         currentStreak: 7,
     });
+
+    // Owner Dashboard: Discount Eligible Members (Mock Data)
+    const [eligibleMembers, setEligibleMembers] = useState([
+        { id: 1, name: "Kakarlamudi Michael Jatin", memberId: "HT-2026-098", attendance: 90, plan: "Quarterly", fee: 3200, discount: 30, reason: "90% Attendance", referral: 0 },
+        { id: 2, name: "Rahul Sharma", memberId: "HT-2026-045", attendance: 100, plan: "Monthly", fee: 1200, discount: 50, reason: "100% Attendance", referral: 0 },
+        { id: 3, name: "Priya Varma", memberId: "HT-2026-112", attendance: 78, plan: "Half-Yearly", fee: 6000, discount: 200, reason: "2 Referrals", referral: 2 },
+        { id: 4, name: "Suresh Kumar", memberId: "HT-2026-078", attendance: 95, plan: "Quarterly", fee: 3200, discount: 30, reason: "95% Attendance", referral: 0 },
+        { id: 5, name: "Anitha Reddy", memberId: "HT-2026-056", attendance: 88, plan: "Monthly", fee: 1200, discount: 100, reason: "1 Referral", referral: 1 },
+    ]);
 
     // Supplement Stack Inventory State with Categories
     const [supplements, setSupplements] = useState([
@@ -150,6 +159,10 @@ export default function GymLandingPage() {
     }).length;
 
     const isGymCrowded = currentlyInsideCount >= 5;
+
+    // Owner Dashboard Calculations
+    const totalPendingDiscounts = eligibleMembers.reduce((sum, m) => sum + m.discount, 0);
+    const totalExpectedRevenue = eligibleMembers.reduce((sum, m) => sum + (m.fee - m.discount), 0);
 
     const peakHours = [
         { time: "5 AM", busy: 30, status: "Normal" },
@@ -282,6 +295,89 @@ export default function GymLandingPage() {
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* ====== OWNER: DISCOUNTS & ELIGIBLE MEMBERS ====== */}
+                                <div className="bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 border border-zinc-800 p-6">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                                        <div className="flex items-center gap-3">
+                                            <BadgePercent className="h-6 w-6 text-emerald-400" />
+                                            <div>
+                                                <h3 className="text-lg font-black text-white uppercase tracking-tight">Discounts & Eligible Members</h3>
+                                                <p className="text-xs text-zinc-400">Members who unlocked attendance & referral rewards this month.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-wrap gap-3">
+                                            <span className="bg-zinc-950 border border-zinc-800 text-xs px-3 py-1.5 font-mono text-emerald-400">
+                                                Eligible: <strong>{eligibleMembers.length} Members</strong>
+                                            </span>
+                                            <span className="bg-amber-950 border border-amber-800 text-amber-300 text-xs px-3 py-1.5 font-mono">
+                                                Pending Discounts: <strong>₹{totalPendingDiscounts}</strong>
+                                            </span>
+                                            <span className="bg-emerald-950 border border-emerald-800 text-emerald-300 text-xs px-3 py-1.5 font-mono">
+                                                Expected Revenue: <strong>₹{totalExpectedRevenue.toLocaleString("en-IN")}</strong>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left text-xs">
+                                            <thead>
+                                                <tr className="border-b border-zinc-800 text-zinc-500 uppercase font-mono tracking-wider">
+                                                    <th className="py-3 px-3">Member</th>
+                                                    <th className="py-3 px-3">Plan</th>
+                                                    <th className="py-3 px-3">Attendance</th>
+                                                    <th className="py-3 px-3">Reason</th>
+                                                    <th className="py-3 px-3 text-right">Original Fee</th>
+                                                    <th className="py-3 px-3 text-right">Discount</th>
+                                                    <th className="py-3 px-3 text-right">Payable</th>
+                                                    <th className="py-3 px-3 text-center">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {eligibleMembers.map((m) => (
+                                                    <tr key={m.id} className="border-b border-zinc-900 hover:bg-zinc-900/60 transition">
+                                                        <td className="py-3 px-3">
+                                                            <div className="font-bold text-white">{m.name}</div>
+                                                            <div className="text-[10px] font-mono text-zinc-500">{m.memberId}</div>
+                                                        </td>
+                                                        <td className="py-3 px-3 text-zinc-400">{m.plan}</td>
+                                                        <td className="py-3 px-3">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-16 h-1.5 bg-zinc-800 overflow-hidden">
+                                                                    <div
+                                                                        className={`h-full ${m.attendance >= 90 ? "bg-emerald-500" : "bg-amber-500"}`}
+                                                                        style={{ width: `${m.attendance}%` }}
+                                                                    ></div>
+                                                                </div>
+                                                                <span className="font-mono text-zinc-300">{m.attendance}%</span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="py-3 px-3">
+                                                            <span className={`text-[10px] uppercase font-mono px-2 py-0.5 border ${m.reason.includes("Referral") ? "bg-pink-950 border-pink-800 text-pink-400" : "bg-emerald-950 border-emerald-900 text-emerald-400"}`}>
+                                                                {m.reason}
+                                                            </span>
+                                                        </td>
+                                                        <td className="py-3 px-3 text-right font-mono text-zinc-400">₹{m.fee.toLocaleString("en-IN")}</td>
+                                                        <td className="py-3 px-3 text-right font-mono text-amber-400 font-bold">-₹{m.discount}</td>
+                                                        <td className="py-3 px-3 text-right font-mono text-white font-bold">₹{(m.fee - m.discount).toLocaleString("en-IN")}</td>
+                                                        <td className="py-3 px-3 text-center">
+                                                            <button className="bg-white text-black font-bold px-3 py-1.5 text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition">
+                                                                Collect Fee
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div className="mt-4 flex items-center justify-between text-[11px] text-zinc-500 font-mono">
+                                        <span>💡 Tip: Discounts automatically calculated based on attendance % and referrals.</span>
+                                        <span>Last updated: Just now</span>
+                                    </div>
+                                </div>
+                                {/* ====== END OWNER DISCOUNTS ====== */}
+
                             </div>
                         ) : (
                             /* MEMBER PORTAL */
@@ -395,7 +491,6 @@ export default function GymLandingPage() {
                                                 className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-500 transition-all duration-1000"
                                                 style={{ width: `${rewardsData.attendancePercent}%` }}
                                             ></div>
-                                            {/* 90% Marker */}
                                             <div className="absolute top-0 bottom-0 left-[90%] w-0.5 bg-amber-400"></div>
                                         </div>
                                         <div className="flex justify-between text-[10px] font-mono text-zinc-500 mt-2">
@@ -457,7 +552,6 @@ export default function GymLandingPage() {
                                             <p className="text-2xl font-black text-pink-400 mt-2">₹100 OFF</p>
                                             <p className="text-[11px] text-zinc-500 mt-3 mb-4">Every friend who joins using your code gives YOU ₹100 off on your next fee!</p>
 
-                                            {/* Referral Code */}
                                             <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 p-2">
                                                 <code className="flex-1 text-sm font-mono font-bold text-white tracking-widest pl-2">
                                                     {rewardsData.referralCode}
