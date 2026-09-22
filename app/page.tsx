@@ -743,4 +743,4 @@ export default function GymLandingPage() {
 
         </div>
     );
-}s
+}
