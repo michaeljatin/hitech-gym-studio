@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import React, { useState, useEffect } from "react";
-import { Dumbbell, Phone, MapPin, Clock, Play, X, Check, Users, TrendingUp, LogOut, User, QrCode, ScanLine, Printer, Package, Plus, Minus, ArrowRightLeft, Trash2 } from "lucide-react";
+import { Dumbbell, Phone, MapPin, Clock, Play, X, Check, Users, TrendingUp, LogOut, User, QrCode, ScanLine, Printer, Package, Plus, Minus, ArrowRightLeft, Trash2, Award, Gift, Share2, Trophy, Star, Copy, Flame } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -15,6 +15,7 @@ export default function GymLandingPage() {
     const [userRole, setUserRole] = useState("member");
     const [scanStatus, setScanStatus] = useState<string | null>(null);
     const [checkInType, setCheckInType] = useState<"IN" | "OUT">("IN");
+    const [copiedCode, setCopiedCode] = useState(false);
 
     // Add Supplement Modal State for Owner
     const [isAddSuppOpen, setIsAddSuppOpen] = useState(false);
@@ -30,6 +31,17 @@ export default function GymLandingPage() {
         totalDays: 90,
         expiryDate: "15 Nov 2026",
         lastCheckIn: "Today, 6:45 AM (IN)",
+    });
+
+    // Rewards & Referral State (Mock Data)
+    const [rewardsData, setRewardsData] = useState({
+        attendancePercent: 85,
+        unlocked90: false,
+        unlocked100: false,
+        referralCode: "MIKE2026",
+        friendsReferred: 2,
+        referralEarnings: 200,
+        currentStreak: 7,
     });
 
     // Supplement Stack Inventory State with Categories
@@ -64,6 +76,12 @@ export default function GymLandingPage() {
         setIsLoggedIn(false);
         setUserName("");
         setUserRole("member");
+    };
+
+    const handleCopyReferral = () => {
+        navigator.clipboard.writeText(rewardsData.referralCode);
+        setCopiedCode(true);
+        setTimeout(() => setCopiedCode(false), 2000);
     };
 
     const simulateMasterQRScan = (type: "IN" | "OUT") => {
@@ -267,7 +285,7 @@ export default function GymLandingPage() {
                             </div>
                         ) : (
                             /* MEMBER PORTAL */
-                            <div>
+                            <div className="space-y-8">
                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                                     <div>
                                         <span className="text-xs uppercase tracking-[0.25em] text-emerald-400 font-mono">Member Portal & Progress</span>
@@ -345,6 +363,135 @@ export default function GymLandingPage() {
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* ====== REWARDS & REFERRALS SECTION ====== */}
+                                <div className="bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 border border-zinc-800 p-8">
+                                    <div className="flex items-center gap-3 mb-8">
+                                        <Trophy className="h-6 w-6 text-amber-400" />
+                                        <div>
+                                            <h3 className="text-xl font-black text-white uppercase tracking-tight">Rewards & Referrals</h3>
+                                            <p className="text-xs text-zinc-400">Stay consistent, earn discounts, and refer friends to save more!</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Attendance Progress Bar */}
+                                    <div className="mb-8 bg-zinc-950 border border-zinc-800 p-6">
+                                        <div className="flex justify-between items-end mb-3">
+                                            <div>
+                                                <span className="text-xs uppercase tracking-widest text-zinc-400 font-mono block mb-1">Your Attendance Streak</span>
+                                                <div className="flex items-baseline gap-2">
+                                                    <span className="text-4xl font-black text-white">{rewardsData.attendancePercent}%</span>
+                                                    <span className="text-xs text-zinc-500 flex items-center gap-1">
+                                                        <Flame className="h-3.5 w-3.5 text-orange-400" /> {rewardsData.currentStreak} day streak
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <span className="text-xs font-mono text-emerald-400 bg-emerald-950 border border-emerald-900 px-3 py-1">
+                                                {rewardsData.attendancePercent >= 90 ? "DISCOUNT UNLOCKED 🎉" : `Need ${90 - rewardsData.attendancePercent}% more for ₹30 off`}
+                                            </span>
+                                        </div>
+                                        <div className="relative w-full h-4 bg-zinc-900 border border-zinc-800 overflow-hidden">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-500 transition-all duration-1000"
+                                                style={{ width: `${rewardsData.attendancePercent}%` }}
+                                            ></div>
+                                            {/* 90% Marker */}
+                                            <div className="absolute top-0 bottom-0 left-[90%] w-0.5 bg-amber-400"></div>
+                                        </div>
+                                        <div className="flex justify-between text-[10px] font-mono text-zinc-500 mt-2">
+                                            <span>0%</span>
+                                            <span className="text-amber-400">▲ 90% (₹30 OFF)</span>
+                                            <span>100% (₹50 OFF)</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                        {/* 90% Discount Card */}
+                                        <div className={`border p-6 relative overflow-hidden ${rewardsData.unlocked90 ? 'bg-emerald-950/40 border-emerald-700' : 'bg-zinc-950 border-zinc-800'}`}>
+                                            {rewardsData.unlocked90 && (
+                                                <div className="absolute top-0 right-0 bg-emerald-500 text-black text-[10px] font-black px-3 py-1 uppercase">
+                                                    Unlocked
+                                                </div>
+                                            )}
+                                            <Award className={`h-8 w-8 mb-3 ${rewardsData.unlocked90 ? 'text-emerald-400' : 'text-zinc-600'}`} />
+                                            <span className="text-xs font-mono text-zinc-400 uppercase block">Tier 1</span>
+                                            <h4 className="text-lg font-black text-white mt-1">90% Attendance</h4>
+                                            <p className="text-2xl font-black text-amber-400 mt-2">₹30 OFF</p>
+                                            <p className="text-[11px] text-zinc-500 mt-3">Attend 90% of your membership days to unlock ₹30 off on your next fee.</p>
+                                            <div className="mt-4 pt-3 border-t border-zinc-800/60">
+                                                {rewardsData.unlocked90 ? (
+                                                    <span className="text-[11px] text-emerald-400 font-bold flex items-center gap-1"><Check className="h-3.5 w-3.5" /> Unlocked on your account</span>
+                                                ) : (
+                                                    <span className="text-[11px] text-zinc-500 font-mono">Progress: {rewardsData.attendancePercent}/90%</span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* 100% Discount Card */}
+                                        <div className={`border p-6 relative overflow-hidden ${rewardsData.unlocked100 ? 'bg-amber-950/40 border-amber-600' : 'bg-zinc-950 border-zinc-800'}`}>
+                                            <div className="absolute top-0 right-0 bg-amber-500 text-black text-[10px] font-black px-3 py-1 uppercase">
+                                                Best Reward
+                                            </div>
+                                            <Trophy className={`h-8 w-8 mb-3 ${rewardsData.unlocked100 ? 'text-amber-400' : 'text-zinc-600'}`} />
+                                            <span className="text-xs font-mono text-zinc-400 uppercase block">Tier 2</span>
+                                            <h4 className="text-lg font-black text-white mt-1">100% Attendance</h4>
+                                            <p className="text-2xl font-black text-amber-400 mt-2">₹50 OFF</p>
+                                            <p className="text-[11px] text-zinc-500 mt-3">Perfect attendance! Attend every single day to unlock the maximum ₹50 discount.</p>
+                                            <div className="mt-4 pt-3 border-t border-zinc-800/60">
+                                                {rewardsData.unlocked100 ? (
+                                                    <span className="text-[11px] text-amber-400 font-bold flex items-center gap-1"><Check className="h-3.5 w-3.5" /> Perfect streak active!</span>
+                                                ) : (
+                                                    <span className="text-[11px] text-zinc-500 font-mono">Progress: {rewardsData.attendancePercent}/100%</span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Referral Card */}
+                                        <div className="bg-zinc-950 border border-zinc-800 p-6 relative overflow-hidden">
+                                            <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-black px-3 py-1 uppercase">
+                                                ₹100 Per Friend
+                                            </div>
+                                            <Gift className="h-8 w-8 text-pink-400 mb-3" />
+                                            <span className="text-xs font-mono text-zinc-400 uppercase block">Refer & Earn</span>
+                                            <h4 className="text-lg font-black text-white mt-1">Invite Your Friends</h4>
+                                            <p className="text-2xl font-black text-pink-400 mt-2">₹100 OFF</p>
+                                            <p className="text-[11px] text-zinc-500 mt-3 mb-4">Every friend who joins using your code gives YOU ₹100 off on your next fee!</p>
+
+                                            {/* Referral Code */}
+                                            <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 p-2">
+                                                <code className="flex-1 text-sm font-mono font-bold text-white tracking-widest pl-2">
+                                                    {rewardsData.referralCode}
+                                                </code>
+                                                <button
+                                                    onClick={handleCopyReferral}
+                                                    className="bg-white text-black px-3 py-1.5 text-[10px] font-black uppercase hover:bg-zinc-200 transition flex items-center gap-1"
+                                                >
+                                                    <Copy className="h-3 w-3" /> {copiedCode ? "Copied!" : "Copy"}
+                                                </button>
+                                            </div>
+
+                                            <div className="flex justify-between mt-4 pt-3 border-t border-zinc-800/60 text-[11px] font-mono">
+                                                <span className="text-zinc-500">Friends Referred: <strong className="text-white">{rewardsData.friendsReferred}</strong></span>
+                                                <span className="text-pink-400 font-bold">Earned: ₹{rewardsData.referralEarnings}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Summary Bar */}
+                                    <div className="mt-8 bg-zinc-950 border border-zinc-800 p-4 flex flex-wrap items-center justify-between gap-4">
+                                        <div className="flex items-center gap-3">
+                                            <Star className="h-5 w-5 text-amber-400" />
+                                            <span className="text-xs text-zinc-300">
+                                                <strong className="text-white">Total Savings Available:</strong> ₹{30 + (rewardsData.unlocked90 ? 0 : 0) + 0 + rewardsData.referralEarnings} on your next renewal
+                                            </span>
+                                        </div>
+                                        <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950 border border-emerald-900 px-3 py-1">
+                                            💡 Stay consistent, save more!
+                                        </span>
+                                    </div>
+                                </div>
+                                {/* ====== END REWARDS SECTION ====== */}
+
                             </div>
                         )}
                     </div>
