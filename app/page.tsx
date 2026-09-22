@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Dumbbell, Clock, MapPin, Phone, Mail, Globe, Share2, AtSign } from "lucide-react";
-import SupplementDashboard from "../components/SupplementDashboard"; // Corrected relative path
+import SupplementDashboard from "./components/SupplementDashboard"; // Corrected relative path
 
 export default function Home() {
     return (
@@ -116,7 +116,7 @@ export default function Home() {
             </section>
             {/* ================================================================= */}
 
-            {/* Footer */}<SupplementDashboard />
+            {/* Footer */}<SupplementDashboard />=
             <footer className="bg-black border-t border-zinc-800 py-12 px-6">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="space-y-4">
