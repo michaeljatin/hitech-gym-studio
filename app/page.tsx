@@ -116,7 +116,7 @@ export default function Home() {
             </section>
             {/* ================================================================= */}
 
-            {/* Footer */}
+            {/* Footer */}<SupplementDashboard />
             <footer className="bg-black border-t border-zinc-800 py-12 px-6">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="space-y-4">
