@@ -608,6 +608,20 @@ export default function GymLandingPage() {
                     </div>
                 </div>
 
+                {/* Google Maps Embed */}
+                <div className="mb-12 w-full h-80 border border-zinc-800">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3863.0991238050988!2d79.97993307527172!3d14.478997185993062!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a4c8d000c6b10bb%3A0x5dfd90e086e33e5!2sHi-Tech%20GYM%20Studio!5e0!3m2!1sen!2sin!4v1790073159277!5m2!1sen!2sin"
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        allowFullScreen={true}
+                        loading="lazy"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        title="Hi-Tech GYM Studio Location"
+                    ></iframe>
+                </div>
+
                 <div className="pt-8 border-t border-zinc-800/60 text-center text-[11px] text-zinc-600">
                     © {new Date().getFullYear()} Hitech Gym Studio. All rights reserved.
                 </div>
@@ -729,4 +743,4 @@ export default function GymLandingPage() {
 
         </div>
     );
-}
+}s
