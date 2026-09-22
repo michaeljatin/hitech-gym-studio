@@ -158,12 +158,14 @@ export default function GymLandingPage() {
         <div className="min-h-screen bg-[#0f1012] text-zinc-100 font-sans selection:bg-zinc-700 selection:text-white">
 
             {/* Header */}
-            <Link href="/" className="flex items-center gap-3 cursor-pointer group">
-                <Dumbbell className="h-7 w-7 text-white group-hover:text-zinc-400 transition" />
-                <span className="font-black text-xl tracking-widest text-white uppercase group-hover:text-zinc-300 transition">
-                    Hitech <span className="text-zinc-400 font-normal group-hover:text-zinc-500 transition">Gym Studio</span>
-                </span>
-            </Link>
+            <nav className="border-b border-zinc-800/80 bg-[#0f1012]/90 backdrop-blur-md sticky top-0 z-40">
+                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                    <Link href="/" className="flex items-center gap-3 cursor-pointer group">
+                        <Dumbbell className="h-7 w-7 text-white group-hover:text-zinc-400 transition" />
+                        <span className="font-black text-xl tracking-widest text-white uppercase group-hover:text-zinc-300 transition">
+                            Hitech <span className="text-zinc-400 font-normal group-hover:text-zinc-500 transition">Gym Studio</span>
+                        </span>
+                    </Link>
 
                     <div className="flex items-center gap-4">
                         {isLoggedIn ? (
