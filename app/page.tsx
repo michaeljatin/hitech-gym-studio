@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { Dumbbell, Clock, MapPin, Phone, Mail, Globe, Share2, AtSign } from "lucide-react";
-import SupplementDashboard from "./components/SupplementDashboard"; // Corrected relative path
-
 export default function Home() {
     return (
         <div className="min-h-screen bg-black text-white font-sans selection:bg-emerald-500 selection:text-black">
@@ -111,12 +109,12 @@ export default function Home() {
                         <p className="text-emerald-400 font-bold tracking-widest uppercase text-xs mb-2">Inventory Management</p>
                         <h2 className="text-4xl font-black uppercase tracking-tight">Supplement Stack Command Center</h2>
                     </div>
-                    <SupplementDashboard />
+                    
                 </div>
             </section>
             {/* ================================================================= */}
 
-            {/* Footer */}<SupplementDashboard />=
+            {/* Footer */}
             <footer className="bg-black border-t border-zinc-800 py-12 px-6">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="space-y-4">
