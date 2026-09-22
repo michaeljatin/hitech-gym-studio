@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Dumbbell, Phone, MapPin, Clock, Play, X, Check, Users, TrendingUp, LogOut, User, QrCode, ScanLine, Printer, Package, Plus, Minus, ArrowRightLeft, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function GymLandingPage() {
     const router = useRouter();
@@ -157,14 +158,12 @@ export default function GymLandingPage() {
         <div className="min-h-screen bg-[#0f1012] text-zinc-100 font-sans selection:bg-zinc-700 selection:text-white">
 
             {/* Header */}
-            <nav className="border-b border-zinc-800/80 bg-[#0f1012]/90 backdrop-blur-md sticky top-0 z-40">
-                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <Dumbbell className="h-7 w-7 text-white" />
-                        <span className="font-black text-xl tracking-widest text-white uppercase">
-                            Hitech <span className="text-zinc-400 font-normal">Gym Studio</span>
-                        </span>
-                    </div>
+            <Link href="/" className="flex items-center gap-3 cursor-pointer group">
+                <Dumbbell className="h-7 w-7 text-white group-hover:text-zinc-400 transition" />
+                <span className="font-black text-xl tracking-widest text-white uppercase group-hover:text-zinc-300 transition">
+                    Hitech <span className="text-zinc-400 font-normal group-hover:text-zinc-500 transition">Gym Studio</span>
+                </span>
+            </Link>
 
                     <div className="flex items-center gap-4">
                         {isLoggedIn ? (
