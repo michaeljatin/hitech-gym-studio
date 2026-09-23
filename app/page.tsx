@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import React, { useState, useEffect } from "react";
-import { Dumbbell, Phone, MapPin, Clock, Play, X, Check, Users, TrendingUp, LogOut, User, QrCode, ScanLine, Printer, Package, Plus, Minus, ArrowRightLeft, Trash2, Award, Gift, Share2, Trophy, Star, Copy, Flame, IndianRupee, BadgePercent } from "lucide-react";
+import { Dumbbell, Phone, MapPin, Clock, Play, X, Check, Users, TrendingUp, LogOut, User, QrCode, ScanLine, Printer, Package, Plus, Minus, ArrowRightLeft, Trash2, Award, Gift, Share2, Trophy, Star, Copy, Flame, IndianRupee, BadgePercent, UserPlus, Calendar, PhoneCall, Edit } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -23,6 +23,16 @@ export default function GymLandingPage() {
     const [newSuppCategory, setNewSuppCategory] = useState("Whey Protein");
     const [newSuppPrice, setNewSuppPrice] = useState("");
     const [newSuppStock, setNewSuppStock] = useState("");
+
+    // Add Member Modal State for Owner
+    const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
+    const [newMemberName, setNewMemberName] = useState("");
+    const [newMemberPhone, setNewMemberPhone] = useState("");
+    const [newMemberPlan, setNewMemberPlan] = useState("Monthly Pass");
+    const [newMemberStartDate, setNewMemberStartDate] = useState("");
+    const [newMemberExpiryDate, setNewMemberExpiryDate] = useState("");
+    const [newMemberAmount, setNewMemberAmount] = useState("");
+    const [newMemberAttendance, setNewMemberAttendance] = useState("");
 
     const [memberData, setMemberData] = useState({
         memberId: "HT-2026-098",
@@ -51,6 +61,16 @@ export default function GymLandingPage() {
         { id: 3, name: "Priya Varma", memberId: "HT-2026-112", attendance: 78, plan: "Half-Yearly", fee: 6000, discount: 200, reason: "2 Referrals", referral: 2 },
         { id: 4, name: "Suresh Kumar", memberId: "HT-2026-078", attendance: 95, plan: "Quarterly", fee: 3200, discount: 30, reason: "95% Attendance", referral: 0 },
         { id: 5, name: "Anitha Reddy", memberId: "HT-2026-056", attendance: 88, plan: "Monthly", fee: 1200, discount: 100, reason: "1 Referral", referral: 1 },
+    ]);
+
+    // Owner Dashboard: All Members List (Mock Data - existing members)
+    const [membersList, setMembersList] = useState([
+        { id: 1, memberId: "HT-2026-098", name: "Kakarlamudi Michael Jatin", phone: "9949461105", plan: "Quarterly Pass", startDate: "15 Aug 2026", expiryDate: "15 Nov 2026", amount: 3200, attendance: 90, referralCode: "MIKE2026", status: "Active" },
+        { id: 2, memberId: "HT-2026-045", name: "Rahul Sharma", phone: "9876543210", plan: "Monthly Pass", startDate: "01 Sep 2026", expiryDate: "01 Oct 2026", amount: 1200, attendance: 100, referralCode: "RAHU2026", status: "Active" },
+        { id: 3, memberId: "HT-2026-112", name: "Priya Varma", phone: "9123456780", plan: "Half-Yearly Pass", startDate: "10 Jun 2026", expiryDate: "10 Dec 2026", amount: 6000, attendance: 78, referralCode: "PRIY2026", status: "Active" },
+        { id: 4, memberId: "HT-2026-078", name: "Suresh Kumar", phone: "9988776655", plan: "Quarterly Pass", startDate: "20 Jul 2026", expiryDate: "20 Oct 2026", amount: 3200, attendance: 95, referralCode: "SURE2026", status: "Active" },
+        { id: 5, memberId: "HT-2026-056", name: "Anitha Reddy", phone: "9871234560", plan: "Monthly Pass", startDate: "05 Sep 2026", expiryDate: "05 Oct 2026", amount: 1200, attendance: 88, referralCode: "ANIT2026", status: "Active" },
+        { id: 6, memberId: "HT-2026-023", name: "Vikram Singh", phone: "9701234567", plan: "Yearly Pass", startDate: "01 Jan 2026", expiryDate: "01 Jan 2027", amount: 10000, attendance: 82, referralCode: "VIKR2026", status: "Active" },
     ]);
 
     // Supplement Stack Inventory State with Categories
@@ -153,6 +173,56 @@ export default function GymLandingPage() {
         setIsAddSuppOpen(false);
     };
 
+    // Generate Member ID: HT-2026-XXX
+    const generateMemberId = () => {
+        const nextNum = membersList.length + 1;
+        const padded = String(nextNum).padStart(3, "0");
+        return `HT-2026-${padded}`;
+    };
+
+    // Generate Referral Code: First 4 letters of name + last 2 digits of phone
+    const generateReferralCode = (name: string, phone: string) => {
+        const namePart = name.replace(/\s/g, "").substring(0, 4).toUpperCase() || "MEMB";
+        const phonePart = phone.slice(-2) || "00";
+        return `${namePart}${phonePart}`;
+    };
+
+    const handleAddMember = (e: React.FormEvent) => {
+        e.preventDefault();
+        const newMemberId = generateMemberId();
+        const newReferralCode = generateReferralCode(newMemberName, newMemberPhone);
+        const amountNum = parseInt(newMemberAmount) || 0;
+        const attendanceNum = parseInt(newMemberAttendance) || 0;
+
+        const newMember = {
+            id: Date.now(),
+            memberId: newMemberId,
+            name: newMemberName,
+            phone: newMemberPhone,
+            plan: newMemberPlan,
+            startDate: newMemberStartDate || new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
+            expiryDate: newMemberExpiryDate,
+            amount: amountNum,
+            attendance: attendanceNum,
+            referralCode: newReferralCode,
+            status: "Active",
+        };
+
+        setMembersList(prev => [newMember, ...prev]);
+        setNewMemberName("");
+        setNewMemberPhone("");
+        setNewMemberPlan("Monthly Pass");
+        setNewMemberStartDate("");
+        setNewMemberExpiryDate("");
+        setNewMemberAmount("");
+        setNewMemberAttendance("");
+        setIsAddMemberOpen(false);
+    };
+
+    const deleteMember = (id: number) => {
+        setMembersList(prev => prev.filter(m => m.id !== id));
+    };
+
     const currentlyInsideCount = liveAttendees.filter(a => {
         const latestForUser = liveAttendees.find(user => user.name === a.name);
         return latestForUser ? latestForUser.type === 'IN' : false;
@@ -163,6 +233,7 @@ export default function GymLandingPage() {
     // Owner Dashboard Calculations
     const totalPendingDiscounts = eligibleMembers.reduce((sum, m) => sum + m.discount, 0);
     const totalExpectedRevenue = eligibleMembers.reduce((sum, m) => sum + (m.fee - m.discount), 0);
+    const totalMembers = membersList.length;
 
     const peakHours = [
         { time: "5 AM", busy: 30, status: "Normal" },
@@ -295,6 +366,95 @@ export default function GymLandingPage() {
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* ====== OWNER: ALL MEMBERS LIST + ADD MEMBER ====== */}
+                                <div className="bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 border border-zinc-800 p-6">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                                        <div className="flex items-center gap-3">
+                                            <Users className="h-6 w-6 text-blue-400" />
+                                            <div>
+                                                <h3 className="text-lg font-black text-white uppercase tracking-tight">All Members Database</h3>
+                                                <p className="text-xs text-zinc-400">Complete list of gym members with their subscription details.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-wrap gap-3">
+                                            <span className="bg-zinc-950 border border-zinc-800 text-xs px-3 py-1.5 font-mono text-blue-400">
+                                                Total Members: <strong>{totalMembers}</strong>
+                                            </span>
+                                            <button
+                                                onClick={() => setIsAddMemberOpen(true)}
+                                                className="bg-white text-black font-bold px-4 py-2 text-xs uppercase tracking-widest hover:bg-zinc-200 transition flex items-center gap-1.5"
+                                            >
+                                                <UserPlus className="h-3.5 w-3.5" /> Add New Member
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left text-xs">
+                                            <thead>
+                                                <tr className="border-b border-zinc-800 text-zinc-500 uppercase font-mono tracking-wider">
+                                                    <th className="py-3 px-3">Member</th>
+                                                    <th className="py-3 px-3">Phone</th>
+                                                    <th className="py-3 px-3">Plan</th>
+                                                    <th className="py-3 px-3">Expiry</th>
+                                                    <th className="py-3 px-3 text-right">Amount</th>
+                                                    <th className="py-3 px-3 text-center">Attendance</th>
+                                                    <th className="py-3 px-3">Referral Code</th>
+                                                    <th className="py-3 px-3 text-center">Status</th>
+                                                    <th className="py-3 px-3 text-center">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {membersList.map((m) => (
+                                                    <tr key={m.id} className="border-b border-zinc-900 hover:bg-zinc-900/60 transition">
+                                                        <td className="py-3 px-3">
+                                                            <div className="font-bold text-white">{m.name}</div>
+                                                            <div className="text-[10px] font-mono text-zinc-500">{m.memberId}</div>
+                                                        </td>
+                                                        <td className="py-3 px-3 font-mono text-zinc-400">{m.phone}</td>
+                                                        <td className="py-3 px-3 text-zinc-400">{m.plan}</td>
+                                                        <td className="py-3 px-3 font-mono text-zinc-400">{m.expiryDate}</td>
+                                                        <td className="py-3 px-3 text-right font-mono text-zinc-300">₹{m.amount.toLocaleString("en-IN")}</td>
+                                                        <td className="py-3 px-3">
+                                                            <div className="flex items-center justify-center gap-2">
+                                                                <div className="w-12 h-1.5 bg-zinc-800 overflow-hidden">
+                                                                    <div
+                                                                        className={`h-full ${m.attendance >= 90 ? "bg-emerald-500" : m.attendance >= 70 ? "bg-amber-500" : "bg-red-500"}`}
+                                                                        style={{ width: `${m.attendance}%` }}
+                                                                    ></div>
+                                                                </div>
+                                                                <span className="font-mono text-zinc-300">{m.attendance}%</span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="py-3 px-3">
+                                                            <code className="text-[10px] font-mono text-pink-400 bg-pink-950 border border-pink-900 px-2 py-0.5">
+                                                                {m.referralCode}
+                                                            </code>
+                                                        </td>
+                                                        <td className="py-3 px-3 text-center">
+                                                            <span className={`text-[10px] uppercase font-mono px-2 py-0.5 border ${m.status === "Active" ? "bg-emerald-950 border-emerald-900 text-emerald-400" : "bg-red-950 border-red-900 text-red-400"}`}>
+                                                                {m.status}
+                                                            </span>
+                                                        </td>
+                                                        <td className="py-3 px-3 text-center">
+                                                            <div className="flex justify-center gap-1">
+                                                                <button className="bg-zinc-800 hover:bg-zinc-700 text-white p-1.5"><Edit className="h-3 w-3" /></button>
+                                                                <button onClick={() => deleteMember(m.id)} className="bg-zinc-800 hover:bg-red-900 text-zinc-400 hover:text-red-400 p-1.5"><Trash2 className="h-3 w-3" /></button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div className="mt-4 flex items-center justify-between text-[11px] text-zinc-500 font-mono">
+                                        <span>💡 Tip: Add existing members manually to track their attendance and rewards.</span>
+                                        <span>Last updated: Just now</span>
+                                    </div>
+                                </div>
+                                {/* ====== END ALL MEMBERS ====== */}
 
                                 {/* ====== OWNER: DISCOUNTS & ELIGIBLE MEMBERS ====== */}
                                 <div className="bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 border border-zinc-800 p-6">
@@ -933,6 +1093,123 @@ export default function GymLandingPage() {
 
                             <button type="submit" className="w-full bg-white text-black font-bold py-3 text-xs uppercase tracking-widest hover:bg-zinc-200 transition mt-2">
                                 Save to Inventory
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Add Member Modal for Owner */}
+            {isAddMemberOpen && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-zinc-900 border border-zinc-800 p-8 max-w-lg w-full relative my-8">
+                        <button onClick={() => setIsAddMemberOpen(false)} className="absolute top-6 right-6 text-zinc-400 hover:text-white">
+                            <X className="h-5 w-5" />
+                        </button>
+                        <div className="flex items-center gap-3 mb-2">
+                            <UserPlus className="h-6 w-6 text-blue-400" />
+                            <h3 className="text-xl font-black text-white uppercase tracking-tight">Add New Member</h3>
+                        </div>
+                        <p className="text-xs text-zinc-400 mb-6">Manually add an existing member or a new member with their subscription details.</p>
+
+                        <form onSubmit={handleAddMember} className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[10px] uppercase font-mono text-zinc-400 mb-1">Member Name</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. Michael Jatin"
+                                        value={newMemberName}
+                                        onChange={(e) => setNewMemberName(e.target.value)}
+                                        required
+                                        className="w-full bg-zinc-950 border border-zinc-800 p-3 text-xs text-white focus:outline-none focus:border-zinc-400"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] uppercase font-mono text-zinc-400 mb-1">Phone Number</label>
+                                    <input
+                                        type="tel"
+                                        placeholder="9949461105"
+                                        value={newMemberPhone}
+                                        onChange={(e) => setNewMemberPhone(e.target.value)}
+                                        required
+                                        className="w-full bg-zinc-950 border border-zinc-800 p-3 text-xs text-white focus:outline-none focus:border-zinc-400"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] uppercase font-mono text-zinc-400 mb-1">Membership Plan</label>
+                                <select
+                                    value={newMemberPlan}
+                                    onChange={(e) => setNewMemberPlan(e.target.value)}
+                                    className="w-full bg-zinc-950 border border-zinc-800 p-3 text-xs text-white focus:outline-none focus:border-zinc-400"
+                                >
+                                    <option value="Monthly Pass">Monthly Pass (₹1,200)</option>
+                                    <option value="Quarterly Pass">Quarterly Pass (₹3,200)</option>
+                                    <option value="Half-Yearly Pass">Half-Yearly Pass (₹6,000)</option>
+                                    <option value="Yearly Pass">Yearly Pass (₹10,000)</option>
+                                </select>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[10px] uppercase font-mono text-zinc-400 mb-1">Start Date</label>
+                                    <input
+                                        type="date"
+                                        value={newMemberStartDate}
+                                        onChange={(e) => setNewMemberStartDate(e.target.value)}
+                                        required
+                                        className="w-full bg-zinc-950 border border-zinc-800 p-3 text-xs text-white focus:outline-none focus:border-zinc-400"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] uppercase font-mono text-zinc-400 mb-1">Expiry Date</label>
+                                    <input
+                                        type="date"
+                                        value={newMemberExpiryDate}
+                                        onChange={(e) => setNewMemberExpiryDate(e.target.value)}
+                                        required
+                                        className="w-full bg-zinc-950 border border-zinc-800 p-3 text-xs text-white focus:outline-none focus:border-zinc-400"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[10px] uppercase font-mono text-zinc-400 mb-1">Amount Paid (₹)</label>
+                                    <input
+                                        type="number"
+                                        placeholder="3200"
+                                        value={newMemberAmount}
+                                        onChange={(e) => setNewMemberAmount(e.target.value)}
+                                        required
+                                        className="w-full bg-zinc-950 border border-zinc-800 p-3 text-xs text-white focus:outline-none focus:border-zinc-400"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] uppercase font-mono text-zinc-400 mb-1">Attendance % (Optional)</label>
+                                    <input
+                                        type="number"
+                                        placeholder="85"
+                                        min="0"
+                                        max="100"
+                                        value={newMemberAttendance}
+                                        onChange={(e) => setNewMemberAttendance(e.target.value)}
+                                        className="w-full bg-zinc-950 border border-zinc-800 p-3 text-xs text-white focus:outline-none focus:border-zinc-400"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="bg-blue-950/40 border border-blue-900 p-3 flex items-start gap-2">
+                                <Calendar className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                                <p className="text-[10px] text-blue-300">
+                                    Member ID and Referral Code will be auto-generated when you save.
+                                </p>
+                            </div>
+
+                            <button type="submit" className="w-full bg-white text-black font-bold py-3 text-xs uppercase tracking-widest hover:bg-zinc-200 transition mt-2">
+                                Save Member to Database
                             </button>
                         </form>
                     </div>
