@@ -15,6 +15,7 @@ export default function GymLandingPage() {
     const [userRole, setUserRole] = useState("member");
     const [scanStatus, setScanStatus] = useState<string | null>(null);
     const [checkInType, setCheckInType] = useState<"IN" | "OUT">("IN");
+    const [copiedCode, setCopiedCode] = useState(false);
 
     // Member Dashboard Tabs
     const [memberTab, setMemberTab] = useState<"overview" | "history">("overview");
