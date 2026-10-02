@@ -986,8 +986,8 @@ export default function GymLandingPage() {
                                 <p className="text-2xl font-black">₹{totalRevenue.toLocaleString("en-IN")}</p>
                             </div>
                             <div className="border-2 border-zinc-900 p-3">
-                                <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Inside Now</p>
-                                <p className="text-2xl font-black">{currentlyInsideCount}</p>
+                                <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Pending Discounts</p>
+                                <p className="text-2xl font-black">₹{totalPendingDiscounts}</p>
                             </div>
                         </div>
 
