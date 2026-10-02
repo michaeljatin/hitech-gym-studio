@@ -1,7 +1,11 @@
 ﻿"use client";
 
 import React, { useState, useEffect } from "react";
+<<<<<<< Updated upstream
 import { Dumbbell, Phone, MapPin, Clock, Play, X, Check, Users, TrendingUp, LogOut, User, QrCode, ScanLine, Printer, Package, Plus, Minus, ArrowRightLeft, Trash2, Award, Gift, Share2, Trophy, Star, Copy, Flame, IndianRupee, BadgePercent, UserPlus, Calendar, PhoneCall, Edit } from "lucide-react";
+=======
+import { Dumbbell, Phone, MapPin, Clock, Play, X, Check, Users, TrendingUp, LogOut, User, QrCode, ScanLine, Printer, Package, Plus, Minus, ArrowRightLeft, Trash2, RotateCcw, Calendar, CreditCard, FileText, Download } from "lucide-react";
+>>>>>>> Stashed changes
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -15,7 +19,16 @@ export default function GymLandingPage() {
     const [userRole, setUserRole] = useState("member");
     const [scanStatus, setScanStatus] = useState<string | null>(null);
     const [checkInType, setCheckInType] = useState<"IN" | "OUT">("IN");
+<<<<<<< Updated upstream
     const [copiedCode, setCopiedCode] = useState(false);
+=======
+
+    // Member Dashboard Tabs ("overview" or "history")
+    const [memberTab, setMemberTab] = useState<"overview" | "history">("overview");
+
+    // Owner Dashboard Tabs
+    const [ownerTab, setOwnerTab] = useState<"attendance" | "members" | "revenue" | "inventory">("attendance");
+>>>>>>> Stashed changes
 
     // Add Supplement Modal State for Owner
     const [isAddSuppOpen, setIsAddSuppOpen] = useState(false);
@@ -34,6 +47,20 @@ export default function GymLandingPage() {
     const [newMemberAmount, setNewMemberAmount] = useState("");
     const [newMemberAttendance, setNewMemberAttendance] = useState("");
 
+<<<<<<< Updated upstream
+=======
+    // ===== NEW: Monthly Report PDF Modal State =====
+    const [isReportOpen, setIsReportOpen] = useState(false);
+
+    // All Gym Members Directory (Includes phone numbers & plans)
+    const [allGymMembers, setAllGymMembers] = useState([
+        { id: 1, name: "Kakarlamudi Michael Jatin", phone: "+91 9949461105", plan: "Quarterly Pass (3 Mos)", expiry: "15 Nov 2026", status: "Active" },
+        { id: 2, name: "Rahul Sharma", phone: "+91 9876543210", plan: "Half-Yearly Pass (6 Mos)", expiry: "01 Feb 2027", status: "Active" },
+        { id: 3, name: "Priya Varma", phone: "+91 9123456789", plan: "Monthly Pass (1 Mo)", expiry: "10 Oct 2026", status: "Active" },
+    ]);
+
+    // Member Personal Data & Subscription Tracking
+>>>>>>> Stashed changes
     const [memberData, setMemberData] = useState({
         memberId: "HT-2026-098",
         membershipType: "Quarterly Pass (3 Mos)",
@@ -107,10 +134,38 @@ export default function GymLandingPage() {
         setUserRole("member");
     };
 
+<<<<<<< Updated upstream
     const handleCopyReferral = () => {
         navigator.clipboard.writeText(rewardsData.referralCode);
         setCopiedCode(true);
         setTimeout(() => setCopiedCode(false), 2000);
+=======
+    // ===== NEW: Open Monthly Report and trigger print =====
+    const handlePrintReport = () => {
+        setIsReportOpen(true);
+        setTimeout(() => {
+            window.print();
+        }, 500);
+    };
+
+    const handleUpiPayment = (packageName: string, amount: number) => {
+        const ownerUpiId = "9949461105@ybl";
+        const ownerName = "Hitech Gym Studio";
+        const upiIntentUrl = `upi://pay?pa=${ownerUpiId}&pn=${encodeURIComponent(ownerName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(packageName + ' Fee')}`;
+
+        window.location.href = upiIntentUrl;
+
+        const newTxn = {
+            id: Date.now(),
+            name: userName || "New Member",
+            package: packageName,
+            amount: `₹${amount.toLocaleString()}`,
+            date: new Date().toLocaleDateString() + ", " + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            mode: "UPI Intent"
+        };
+        setRevenueLogs(prev => [newTxn, ...prev]);
+        alert(`Redirecting to UPI payment for ${packageName} (${amount}). Payment recorded to owner account!`);
+>>>>>>> Stashed changes
     };
 
     const simulateMasterQRScan = (type: "IN" | "OUT") => {
@@ -256,6 +311,12 @@ export default function GymLandingPage() {
         { id: "7", title: "Free Weights Zone", img: "/gym-7.jpg" },
     ];
 
+    // ===== Report Calculations =====
+    const totalRevenue = revenueLogs.reduce((sum, txn) => {
+        const amt = parseInt(txn.amount.replace(/[₹,]/g, "")) || 0;
+        return sum + amt;
+    }, 0);
+
     return (
         <div className="min-h-screen bg-[#0f1012] text-zinc-100 font-sans selection:bg-zinc-700 selection:text-white">
 
@@ -319,6 +380,7 @@ export default function GymLandingPage() {
                                         <span className="text-xs uppercase tracking-[0.25em] text-red-400 font-mono">Gym Owner Control Panel</span>
                                         <h2 className="text-3xl font-black text-white uppercase tracking-tight">Master Admin Dashboard</h2>
                                     </div>
+<<<<<<< Updated upstream
                                     <div className="flex items-center gap-3">
                                         <span className="bg-zinc-950 border border-zinc-800 text-xs px-3 py-1 font-mono text-emerald-400">
                                             Currently Inside: <strong>{currentlyInsideCount} Members</strong>
@@ -336,6 +398,71 @@ export default function GymLandingPage() {
                                                 <div className="w-40 h-40 bg-zinc-950 flex flex-col items-center justify-center text-white p-2">
                                                     <QrCode className="h-16 w-16 text-emerald-400 mb-2" />
                                                     <span className="text-[11px] font-mono font-bold tracking-wider">HITECH-IN-OUT-QR</span>
+=======
+                                    <div className="flex items-center gap-3 flex-wrap">
+                                        {/* ===== NEW: Monthly Report Button ===== */}
+                                        <button
+                                            onClick={handlePrintReport}
+                                            className="bg-white text-black hover:bg-zinc-200 text-xs px-3 py-2 font-mono flex items-center gap-1.5 transition font-bold"
+                                        >
+                                            <FileText className="h-3.5 w-3.5" /> Monthly Report
+                                        </button>
+                                        <button
+                                            onClick={() => setIsAddMemberOpen(true)}
+                                            className="bg-emerald-950 hover:bg-emerald-900 border border-emerald-800 text-emerald-300 text-xs px-3 py-2 font-mono flex items-center gap-1.5 transition"
+                                        >
+                                            <Plus className="h-3.5 w-3.5" /> Add New / Offline Member
+                                        </button>
+                                        <button
+                                            onClick={resetAttendanceLog}
+                                            className="bg-red-950 hover:bg-red-900 border border-red-800 text-red-300 text-xs px-3 py-2 font-mono flex items-center gap-1.5 transition"
+                                        >
+                                            <RotateCcw className="h-3.5 w-3.5" /> Reset Attendance
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Owner Navigation Tabs */}
+                                <div className="flex gap-6 border-b border-zinc-800 overflow-x-auto pb-1">
+                                    <button
+                                        onClick={() => setOwnerTab("attendance")}
+                                        className={`pb-3 text-sm md:text-base uppercase font-mono tracking-wider transition font-black ${ownerTab === 'attendance' ? 'border-b-2 border-white text-white' : 'text-red-600 hover:text-red-500'}`}
+                                    >
+                                        Attendance & Gateway QR
+                                    </button>
+                                    <button
+                                        onClick={() => setOwnerTab("members")}
+                                        className={`pb-3 text-sm md:text-base uppercase font-mono tracking-wider transition font-black ${ownerTab === 'members' ? 'border-b-2 border-white text-white' : 'text-red-600 hover:text-red-500'}`}
+                                    >
+                                        All Gym Members Directory ({allGymMembers.length})
+                                    </button>
+                                    <button
+                                        onClick={() => setOwnerTab("revenue")}
+                                        className={`pb-3 text-sm md:text-base uppercase font-mono tracking-wider transition font-black ${ownerTab === 'revenue' ? 'border-b-2 border-white text-white' : 'text-red-600 hover:text-red-500'}`}
+                                    >
+                                        Revenue & UPI Records
+                                    </button>
+                                    <button
+                                        onClick={() => setOwnerTab("inventory")}
+                                        className={`pb-3 text-sm md:text-base uppercase font-mono tracking-wider transition font-black ${ownerTab === 'inventory' ? 'border-b-2 border-white text-white' : 'text-red-600 hover:text-red-500'}`}
+                                    >
+                                        Supplement Stack Inventory
+                                    </button>
+                                </div>
+
+                                {/* TAB 1: ATTENDANCE & GATEWAY QR */}
+                                {ownerTab === "attendance" && (
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                        <div className="bg-zinc-950 border border-zinc-800 p-6 flex flex-col items-center text-center justify-between">
+                                            <div>
+                                                <span className="text-xs text-zinc-400 uppercase tracking-widest block mb-1">Gym Entrance Gateway QR</span>
+                                                <p className="text-[11px] text-zinc-500 mb-4">Print & paste at entrance. Members scan for In/Out.</p>
+                                                <div className="bg-white p-4 inline-block shadow-xl border-4 border-zinc-900">
+                                                    <div className="w-40 h-40 bg-zinc-950 flex flex-col items-center justify-center text-white p-2">
+                                                        <QrCode className="h-16 w-16 text-emerald-400 mb-2" />
+                                                        <span className="text-[11px] font-mono font-bold tracking-wider">HITECH-GATE-QR</span>
+                                                    </div>
+>>>>>>> Stashed changes
                                                 </div>
                                             </div>
                                         </div>
@@ -1212,6 +1339,181 @@ export default function GymLandingPage() {
                                 Save Member to Database
                             </button>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* ===== NEW: MONTHLY REPORT PDF MODAL ===== */}
+            {isReportOpen && (
+                <div className="fixed inset-0 bg-white z-[100] overflow-y-auto">
+                    <style>{`
+                        @media print {
+                            @page { size: A4; margin: 15mm; }
+                            body { background: white !important; }
+                            .no-print { display: none !important; }
+                        }
+                    `}</style>
+
+                    {/* Action Buttons (Print lo kanipinchavu) */}
+                    <div className="no-print sticky top-0 bg-zinc-900 text-white p-4 flex justify-between items-center z-10">
+                        <span className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
+                            <FileText className="h-4 w-4" /> Monthly Report Preview
+                        </span>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => window.print()}
+                                className="bg-white text-black font-bold px-4 py-2 text-xs uppercase tracking-widest hover:bg-zinc-200 transition flex items-center gap-1.5"
+                            >
+                                <Download className="h-3.5 w-3.5" /> Save as PDF / Print
+                            </button>
+                            <button
+                                onClick={() => setIsReportOpen(false)}
+                                className="bg-zinc-700 text-white font-bold px-4 py-2 text-xs uppercase tracking-widest hover:bg-zinc-600 transition"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Printable Report Content */}
+                    <div className="max-w-4xl mx-auto p-10 text-zinc-900 bg-white">
+                        {/* Report Header */}
+                        <div className="flex justify-between items-start border-b-2 border-zinc-900 pb-6 mb-6">
+                            <div>
+                                <div className="flex items-center gap-3">
+                                    <Dumbbell className="h-8 w-8 text-zinc-900" />
+                                    <h1 className="text-3xl font-black uppercase tracking-wider">Hitech Gym Studio</h1>
+                                </div>
+                                <p className="text-xs text-zinc-600 mt-2">Saluchinthala, Kovvur Mandal, Nellore District, AP</p>
+                                <p className="text-xs text-zinc-600">Phone: +91 9949461105</p>
+                            </div>
+                            <div className="text-right">
+                                <h2 className="text-xl font-black uppercase">Monthly Report</h2>
+                                <p className="text-xs text-zinc-600 mt-1">
+                                    Generated: {new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" })}
+                                </p>
+                                <p className="text-xs text-zinc-600">
+                                    Time: {new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Summary Stats */}
+                        <div className="grid grid-cols-4 gap-4 mb-8">
+                            <div className="border-2 border-zinc-900 p-3">
+                                <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Total Members</p>
+                                <p className="text-2xl font-black">{allGymMembers.length}</p>
+                            </div>
+                            <div className="border-2 border-zinc-900 p-3">
+                                <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Active Members</p>
+                                <p className="text-2xl font-black">{allGymMembers.filter(m => m.status === "Active").length}</p>
+                            </div>
+                            <div className="border-2 border-zinc-900 p-3">
+                                <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Revenue (Recorded)</p>
+                                <p className="text-2xl font-black">₹{totalRevenue.toLocaleString("en-IN")}</p>
+                            </div>
+                            <div className="border-2 border-zinc-900 p-3">
+                                <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Inside Now</p>
+                                <p className="text-2xl font-black">{currentlyInsideCount}</p>
+                            </div>
+                        </div>
+
+                        {/* Members Table with Phone Numbers */}
+                        <h3 className="text-lg font-black uppercase border-b-2 border-zinc-900 pb-2 mb-4">Member Contact Directory</h3>
+                        <table className="w-full text-left text-[11px] mb-8">
+                            <thead>
+                                <tr className="border-b-2 border-zinc-900 font-black uppercase">
+                                    <th className="py-2 px-2">#</th>
+                                    <th className="py-2 px-2">Member Name</th>
+                                    <th className="py-2 px-2">Phone Number</th>
+                                    <th className="py-2 px-2">Plan</th>
+                                    <th className="py-2 px-2">Expiry Date</th>
+                                    <th className="py-2 px-2 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {allGymMembers.map((m, idx) => (
+                                    <tr key={m.id} className="border-b border-zinc-300">
+                                        <td className="py-2 px-2">{idx + 1}</td>
+                                        <td className="py-2 px-2 font-bold">{m.name}</td>
+                                        <td className="py-2 px-2 font-mono">{m.phone}</td>
+                                        <td className="py-2 px-2">{m.plan}</td>
+                                        <td className="py-2 px-2 font-mono">{m.expiry}</td>
+                                        <td className="py-2 px-2 text-center">{m.status}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                        {/* Revenue Records */}
+                        <h3 className="text-lg font-black uppercase border-b-2 border-zinc-900 pb-2 mb-4">Revenue & Payment Records</h3>
+                        <table className="w-full text-left text-[11px] mb-8">
+                            <thead>
+                                <tr className="border-b-2 border-zinc-900 font-black uppercase">
+                                    <th className="py-2 px-2">Member Name</th>
+                                    <th className="py-2 px-2">Package</th>
+                                    <th className="py-2 px-2">Amount</th>
+                                    <th className="py-2 px-2">Date & Time</th>
+                                    <th className="py-2 px-2">Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {revenueLogs.map((txn) => (
+                                    <tr key={txn.id} className="border-b border-zinc-300">
+                                        <td className="py-2 px-2 font-bold">{txn.name}</td>
+                                        <td className="py-2 px-2">{txn.package}</td>
+                                        <td className="py-2 px-2 font-mono">{txn.amount}</td>
+                                        <td className="py-2 px-2 font-mono">{txn.date}</td>
+                                        <td className="py-2 px-2">{txn.mode}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                            <tfoot>
+                                <tr className="border-t-2 border-zinc-900 font-black">
+                                    <td className="py-2 px-2" colSpan={2}>TOTAL REVENUE</td>
+                                    <td className="py-2 px-2 font-mono">₹{totalRevenue.toLocaleString("en-IN")}</td>
+                                    <td className="py-2 px-2" colSpan={2}></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        {/* Today's Attendance */}
+                        <h3 className="text-lg font-black uppercase border-b-2 border-zinc-900 pb-2 mb-4">Today's Attendance & Activity</h3>
+                        <table className="w-full text-left text-[11px] mb-8">
+                            <thead>
+                                <tr className="border-b-2 border-zinc-900 font-black uppercase">
+                                    <th className="py-2 px-2">Member Name</th>
+                                    <th className="py-2 px-2 text-center">Days Attended</th>
+                                    <th className="py-2 px-2 text-center">Last Activity</th>
+                                    <th className="py-2 px-2 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {liveAttendees.map((a, idx) => (
+                                    <tr key={idx} className="border-b border-zinc-300">
+                                        <td className="py-2 px-2 font-bold">{a.name}</td>
+                                        <td className="py-2 px-2 text-center font-mono">{a.totalDaysAttended} / {a.totalAllowedDays}</td>
+                                        <td className="py-2 px-2 text-center font-mono">{a.lastTime}</td>
+                                        <td className="py-2 px-2 text-center">{a.status}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                        {/* Footer / Signature */}
+                        <div className="mt-12 pt-6 border-t-2 border-zinc-900">
+                            <div className="flex justify-between text-xs">
+                                <div>
+                                    <p className="font-black uppercase mb-8">Owner Signature</p>
+                                    <p className="border-t border-zinc-900 w-48 pt-1">Prasad (Owner)</p>
+                                </div>
+                                <div className="text-right text-[10px] text-zinc-500">
+                                    <p>This is a computer-generated report.</p>
+                                    <p>Generated by Hitech Gym Studio Management System.</p>
+                                    <p className="mt-1">© {new Date().getFullYear()} Hitech Gym Studio. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
