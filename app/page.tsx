@@ -16,6 +16,7 @@ export default function GymLandingPage() {
     const [scanStatus, setScanStatus] = useState<string | null>(null);
     const [checkInType, setCheckInType] = useState<"IN" | "OUT">("IN");
     const [copiedCode, setCopiedCode] = useState(false);
+    const [memberCurrentStatus, setMemberCurrentStatus] = useState<"IN" | "OUT" | null>(null);
 
     // Member Dashboard Tabs
     const [memberTab, setMemberTab] = useState<"overview" | "history">("overview");
@@ -164,6 +165,16 @@ export default function GymLandingPage() {
     };
 
     const simulateMasterQRScan = (type: "IN" | "OUT") => {
+        // ===== VALIDATION: IN kottina tarvata malli IN kottakoodadhu =====
+        if (type === "IN" && memberCurrentStatus === "IN") {
+            setScanStatus("❌ ERROR: You are already checked IN. Please CHECK-OUT first before checking in again.");
+            return;
+        }
+        if (type === "OUT" && memberCurrentStatus !== "IN") {
+            setScanStatus("❌ ERROR: You must CHECK-IN first before you can CHECK-OUT.");
+            return;
+        }
+
         setScanStatus(`Processing ${type} Scan...`);
         setTimeout(() => {
             const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -173,21 +184,41 @@ export default function GymLandingPage() {
                 setMemberData(prev => ({
                     ...prev,
                     daysAttended: prev.daysAttended + 1,
-                    lastCheckIn: `Today, ${currentTime} (IN)`
+                    lastCheckIn: `Today, ${currentTime} (IN)`,
                 }));
+                setMemberCurrentStatus("IN");
             } else {
                 setMemberData(prev => ({
                     ...prev,
-                    lastCheckIn: `Today, ${currentTime} (OUT)`
+                    lastCheckIn: `Today, ${currentTime} (OUT)`,
                 }));
+                setMemberCurrentStatus("OUT");
             }
 
-            setLiveAttendees(prev => [
-                { name: currentName, time: currentTime, type: type, status: type === "IN" ? "Inside Gym" : "Checked Out" },
-                ...prev
-            ]);
+            // Live attendees feed update
+            setLiveAttendees(prev => {
+                const existingIndex = prev.findIndex(item => item.name === currentName);
+                const currentAttendedCount = memberData.daysAttended + (type === 'IN' ? 1 : 0);
 
-            setScanStatus(`SUCCESS: ${type} Pass Registered! Owner & Dashboard Updated.`);
+                if (existingIndex > -1) {
+                    const updated = [...prev];
+                    updated[existingIndex] = {
+                        ...updated[existingIndex],
+                        totalDaysAttended: currentAttendedCount,
+                        lastTime: currentTime,
+                        type: type,
+                        status: type === 'IN' ? 'Inside Gym' : 'Checked Out'
+                    };
+                    return updated;
+                } else {
+                    return [
+                        { name: currentName, totalDaysAttended: currentAttendedCount, totalAllowedDays: memberData.totalDays, lastTime: currentTime, type: type, status: type === 'IN' ? 'Inside Gym' : 'Checked Out' },
+                        ...prev
+                    ];
+                }
+            });
+
+            setScanStatus(`✅ SUCCESS: ${type} Pass Registered at ${currentTime}. Owner Dashboard Updated.`);
         }, 800);
     };
 
@@ -273,6 +304,8 @@ export default function GymLandingPage() {
     const resetAttendanceLog = () => {
         if (confirm("Are you sure you want to reset today's attendance feed?")) {
             setLiveAttendees([]);
+            setMemberCurrentStatus(null);
+            setScanStatus(null);
             alert("Attendance feed has been reset successfully.");
         }
     };
@@ -605,14 +638,54 @@ export default function GymLandingPage() {
                                             <div className="mt-6 pt-4 border-t border-zinc-900 text-xs text-emerald-400 font-mono">Status: Active Gym Member ✅</div>
                                         </div>
 
+                                        {/* QR Scanner Card with STRICT Check-in/Check-out */}
                                         <div className="bg-zinc-950 border border-zinc-800 p-6 flex flex-col items-center text-center justify-between">
-                                            <div>
+                                            <div className="w-full">
                                                 <span className="text-xs text-zinc-300 uppercase tracking-widest font-bold block mb-1">Scan Master Entrance QR</span>
                                                 <p className="text-[11px] text-zinc-500 mb-3">Select IN when entering or OUT when leaving</p>
-                                                <div className="flex gap-2 justify-center mb-3">
-                                                    <button onClick={() => setCheckInType("IN")} className={`px-4 py-1.5 text-xs font-bold uppercase ${checkInType === 'IN' ? 'bg-emerald-600 text-white' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'}`}>Check-IN</button>
-                                                    <button onClick={() => setCheckInType("OUT")} className={`px-4 py-1.5 text-xs font-bold uppercase ${checkInType === 'OUT' ? 'bg-orange-600 text-white' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'}`}>Check-OUT</button>
+
+                                                {/* Current Status Indicator */}
+                                                <div className={`text-[10px] font-mono uppercase tracking-wider mb-3 px-3 py-1.5 border w-full ${memberCurrentStatus === "IN"
+                                                        ? 'bg-emerald-950 border-emerald-900 text-emerald-400'
+                                                        : memberCurrentStatus === "OUT"
+                                                            ? 'bg-orange-950 border-orange-900 text-orange-400'
+                                                            : 'bg-zinc-900 border-zinc-800 text-zinc-500'
+                                                    }`}>
+                                                    {memberCurrentStatus === "IN"
+                                                        ? "🟢 Currently Inside Gym"
+                                                        : memberCurrentStatus === "OUT"
+                                                            ? "🔴 Checked Out (Can Check-IN again)"
+                                                            : "⚪ Not Checked In Yet"}
                                                 </div>
+
+                                                {/* Check-IN / Check-OUT Buttons with Locks */}
+                                                <div className="flex gap-2 justify-center mb-3">
+                                                    <button
+                                                        onClick={() => setCheckInType("IN")}
+                                                        disabled={memberCurrentStatus === "IN"}
+                                                        className={`px-4 py-1.5 text-xs font-bold uppercase transition ${memberCurrentStatus === "IN"
+                                                                ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed border border-zinc-800'
+                                                                : checkInType === 'IN'
+                                                                    ? 'bg-emerald-600 text-white'
+                                                                    : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
+                                                            }`}
+                                                    >
+                                                        Check-IN {memberCurrentStatus === "IN" && "🔒"}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setCheckInType("OUT")}
+                                                        disabled={memberCurrentStatus !== "IN"}
+                                                        className={`px-4 py-1.5 text-xs font-bold uppercase transition ${memberCurrentStatus !== "IN"
+                                                                ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed border border-zinc-800'
+                                                                : checkInType === 'OUT'
+                                                                    ? 'bg-orange-600 text-white'
+                                                                    : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
+                                                            }`}
+                                                    >
+                                                        Check-OUT {memberCurrentStatus !== "IN" && "🔒"}
+                                                    </button>
+                                                </div>
+
                                                 <div className="bg-white p-2 inline-block shadow-lg">
                                                     <div className="w-24 h-24 bg-zinc-950 flex flex-col items-center justify-center text-white p-2">
                                                         <ScanLine className="h-7 w-7 text-emerald-400 animate-bounce mb-1" />
@@ -620,11 +693,36 @@ export default function GymLandingPage() {
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div className="w-full mt-3">
-                                                <button onClick={() => simulateMasterQRScan(checkInType)} className={`w-full font-bold py-2.5 text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 ${checkInType === 'IN' ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-orange-600 hover:bg-orange-500 text-white'}`}>
+                                                <button
+                                                    onClick={() => simulateMasterQRScan(checkInType)}
+                                                    disabled={
+                                                        (checkInType === "IN" && memberCurrentStatus === "IN") ||
+                                                        (checkInType === "OUT" && memberCurrentStatus !== "IN")
+                                                    }
+                                                    className={`w-full font-bold py-2.5 text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 ${(checkInType === "IN" && memberCurrentStatus === "IN") ||
+                                                            (checkInType === "OUT" && memberCurrentStatus !== "IN")
+                                                            ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
+                                                            : checkInType === 'IN'
+                                                                ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                                                                : 'bg-orange-600 hover:bg-orange-500 text-white'
+                                                        }`}
+                                                >
                                                     <ArrowRightLeft className="h-4 w-4" /> Simulate Scan ({checkInType} Pass)
                                                 </button>
-                                                {scanStatus && <p className="text-[10px] text-emerald-400 mt-2 font-mono bg-emerald-950/40 border border-emerald-900 p-1.5">{scanStatus}</p>}
+
+                                                {/* Status Message with Dynamic Colors */}
+                                                {scanStatus && (
+                                                    <p className={`text-[10px] mt-2 font-mono p-2 border ${scanStatus.includes("❌")
+                                                            ? 'text-red-400 bg-red-950/40 border-red-900'
+                                                            : scanStatus.includes("✅")
+                                                                ? 'text-emerald-400 bg-emerald-950/40 border-emerald-900'
+                                                                : 'text-amber-400 bg-amber-950/40 border-amber-900'
+                                                        }`}>
+                                                        {scanStatus}
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -711,7 +809,9 @@ export default function GymLandingPage() {
                                             <p className="text-2xl font-black text-pink-400 mt-2">₹100 OFF</p>
                                             <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 p-2 mt-4">
                                                 <code className="flex-1 text-sm font-mono font-bold text-white tracking-widest pl-2">{rewardsData.referralCode}</code>
-                                                <button className="bg-white text-black px-3 py-1.5 text-[10px] font-black uppercase hover:bg-zinc-200 transition flex items-center gap-1"><Copy className="h-3 w-3" /> Copy</button>
+                                                <button onClick={handleCopyReferral} className="bg-white text-black px-3 py-1.5 text-[10px] font-black uppercase hover:bg-zinc-200 transition flex items-center gap-1">
+                                                    <Copy className="h-3 w-3" /> {copiedCode ? "Copied!" : "Copy"}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
