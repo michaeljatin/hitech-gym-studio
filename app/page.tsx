@@ -328,7 +328,12 @@ export default function GymLandingPage() {
     };
 
     const currentlyInsideCount = liveAttendees.filter(a => a.type === 'IN').length;
-    const isGymCrowded = currentlyInsideCount >= 5;
+
+    // ===== GYM CAPACITY SETTINGS =====
+    // Future lo capacity marchali anukunte, ee okka number matrame marchu
+    const GYM_CAPACITY = 50;
+    const BUSY_THRESHOLD = Math.ceil(GYM_CAPACITY * 0.6); // 60% full = BUSY
+    const isGymCrowded = currentlyInsideCount >= BUSY_THRESHOLD;
 
     const totalPendingDiscounts = eligibleMembers.reduce((sum, m) => sum + m.discount, 0);
     const totalExpectedRevenue = eligibleMembers.reduce((sum, m) => sum + (m.fee - m.discount), 0);
