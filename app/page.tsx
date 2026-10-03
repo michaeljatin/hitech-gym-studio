@@ -99,8 +99,16 @@ export default function GymLandingPage() {
         { id: 4, name: "Omega-3 Fish Oil Softgels", category: "Pre-Workouts", stock: 25, price: "₹650", status: "In Stock" },
     ]);
 
-    // Live Attendees
-    const [liveAttendees, setLiveAttendees] = useState([
+    // Live Attendees (with extended type for attendance tracking)
+    const [liveAttendees, setLiveAttendees] = useState<{
+        name: string;
+        time: string;
+        type: string;
+        status: string;
+        totalDaysAttended?: number;
+        totalAllowedDays?: number;
+        lastTime?: string;
+    }[]>([
         { name: "Kakarlamudi Michael Jatin", time: "06:45 AM", type: "IN", status: "Inside Gym" },
         { name: "Rahul Sharma", time: "07:15 AM", type: "IN", status: "Inside Gym" },
         { name: "Priya Varma", time: "08:00 AM", type: "OUT", status: "Checked Out" },
@@ -204,6 +212,7 @@ export default function GymLandingPage() {
                     const updated = [...prev];
                     updated[existingIndex] = {
                         ...updated[existingIndex],
+                        time: currentTime,
                         totalDaysAttended: currentAttendedCount,
                         lastTime: currentTime,
                         type: type,
@@ -212,7 +221,15 @@ export default function GymLandingPage() {
                     return updated;
                 } else {
                     return [
-                        { name: currentName, totalDaysAttended: currentAttendedCount, totalAllowedDays: memberData.totalDays, lastTime: currentTime, type: type, status: type === 'IN' ? 'Inside Gym' : 'Checked Out' },
+                        {
+                            name: currentName,
+                            time: currentTime,
+                            totalDaysAttended: currentAttendedCount,
+                            totalAllowedDays: memberData.totalDays,
+                            lastTime: currentTime,
+                            type: type,
+                            status: type === 'IN' ? 'Inside Gym' : 'Checked Out'
+                        },
                         ...prev
                     ];
                 }
@@ -646,10 +663,10 @@ export default function GymLandingPage() {
 
                                                 {/* Current Status Indicator */}
                                                 <div className={`text-[10px] font-mono uppercase tracking-wider mb-3 px-3 py-1.5 border w-full ${memberCurrentStatus === "IN"
-                                                        ? 'bg-emerald-950 border-emerald-900 text-emerald-400'
-                                                        : memberCurrentStatus === "OUT"
-                                                            ? 'bg-orange-950 border-orange-900 text-orange-400'
-                                                            : 'bg-zinc-900 border-zinc-800 text-zinc-500'
+                                                    ? 'bg-emerald-950 border-emerald-900 text-emerald-400'
+                                                    : memberCurrentStatus === "OUT"
+                                                        ? 'bg-orange-950 border-orange-900 text-orange-400'
+                                                        : 'bg-zinc-900 border-zinc-800 text-zinc-500'
                                                     }`}>
                                                     {memberCurrentStatus === "IN"
                                                         ? "🟢 Currently Inside Gym"
@@ -664,10 +681,10 @@ export default function GymLandingPage() {
                                                         onClick={() => setCheckInType("IN")}
                                                         disabled={memberCurrentStatus === "IN"}
                                                         className={`px-4 py-1.5 text-xs font-bold uppercase transition ${memberCurrentStatus === "IN"
-                                                                ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed border border-zinc-800'
-                                                                : checkInType === 'IN'
-                                                                    ? 'bg-emerald-600 text-white'
-                                                                    : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
+                                                            ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed border border-zinc-800'
+                                                            : checkInType === 'IN'
+                                                                ? 'bg-emerald-600 text-white'
+                                                                : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
                                                             }`}
                                                     >
                                                         Check-IN {memberCurrentStatus === "IN" && "🔒"}
@@ -676,10 +693,10 @@ export default function GymLandingPage() {
                                                         onClick={() => setCheckInType("OUT")}
                                                         disabled={memberCurrentStatus !== "IN"}
                                                         className={`px-4 py-1.5 text-xs font-bold uppercase transition ${memberCurrentStatus !== "IN"
-                                                                ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed border border-zinc-800'
-                                                                : checkInType === 'OUT'
-                                                                    ? 'bg-orange-600 text-white'
-                                                                    : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
+                                                            ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed border border-zinc-800'
+                                                            : checkInType === 'OUT'
+                                                                ? 'bg-orange-600 text-white'
+                                                                : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
                                                             }`}
                                                     >
                                                         Check-OUT {memberCurrentStatus !== "IN" && "🔒"}
@@ -702,11 +719,11 @@ export default function GymLandingPage() {
                                                         (checkInType === "OUT" && memberCurrentStatus !== "IN")
                                                     }
                                                     className={`w-full font-bold py-2.5 text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 ${(checkInType === "IN" && memberCurrentStatus === "IN") ||
-                                                            (checkInType === "OUT" && memberCurrentStatus !== "IN")
-                                                            ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
-                                                            : checkInType === 'IN'
-                                                                ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
-                                                                : 'bg-orange-600 hover:bg-orange-500 text-white'
+                                                        (checkInType === "OUT" && memberCurrentStatus !== "IN")
+                                                        ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
+                                                        : checkInType === 'IN'
+                                                            ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                                                            : 'bg-orange-600 hover:bg-orange-500 text-white'
                                                         }`}
                                                 >
                                                     <ArrowRightLeft className="h-4 w-4" /> Simulate Scan ({checkInType} Pass)
@@ -715,10 +732,10 @@ export default function GymLandingPage() {
                                                 {/* Status Message with Dynamic Colors */}
                                                 {scanStatus && (
                                                     <p className={`text-[10px] mt-2 font-mono p-2 border ${scanStatus.includes("❌")
-                                                            ? 'text-red-400 bg-red-950/40 border-red-900'
-                                                            : scanStatus.includes("✅")
-                                                                ? 'text-emerald-400 bg-emerald-950/40 border-emerald-900'
-                                                                : 'text-amber-400 bg-amber-950/40 border-amber-900'
+                                                        ? 'text-red-400 bg-red-950/40 border-red-900'
+                                                        : scanStatus.includes("✅")
+                                                            ? 'text-emerald-400 bg-emerald-950/40 border-emerald-900'
+                                                            : 'text-amber-400 bg-amber-950/40 border-amber-900'
                                                         }`}>
                                                         {scanStatus}
                                                     </p>
