@@ -638,113 +638,178 @@ export default function GymLandingPage() {
                                 </div>
 
                                 {memberTab === "overview" ? (
-                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                        <div className="bg-zinc-950 border border-zinc-800 p-6 flex flex-col justify-between">
-                                            <div>
-                                                <span className="text-xs text-zinc-400 uppercase tracking-widest block mb-3">Active Plan</span>
-                                                <h3 className="text-lg font-bold text-white">{memberData.membershipType}</h3>
-                                                <p className="text-xs text-zinc-500 mt-1">Valid till: {memberData.expiryDate}</p>
+                                    <div className="space-y-6">
+                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                            <div className="bg-zinc-950 border border-zinc-800 p-6 flex flex-col justify-between">
+                                                <div>
+                                                    <span className="text-xs text-zinc-400 uppercase tracking-widest block mb-3">Active Plan</span>
+                                                    <h3 className="text-lg font-bold text-white">{memberData.membershipType}</h3>
+                                                    <p className="text-xs text-zinc-500 mt-1">Valid till: {memberData.expiryDate}</p>
+                                                </div>
+                                                <div className="mt-6 pt-4 border-t border-zinc-900 flex justify-between text-xs">
+                                                    <span className="text-zinc-400">Fee Status:</span>
+                                                    <span className="text-emerald-400 font-bold uppercase">Paid (No Dues)</span>
+                                                </div>
                                             </div>
-                                            <div className="mt-6 pt-4 border-t border-zinc-900 flex justify-between text-xs">
-                                                <span className="text-zinc-400">Fee Status:</span>
-                                                <span className="text-emerald-400 font-bold uppercase">Paid (No Dues)</span>
+
+                                            <div className="bg-zinc-950 border border-zinc-800 p-6 flex flex-col justify-between">
+                                                <div>
+                                                    <span className="text-xs text-zinc-400 uppercase tracking-widest block mb-3">Attendance Progress</span>
+                                                    <h3 className="text-3xl font-black text-white">{memberData.daysAttended} <span className="text-xs font-normal text-zinc-500">/ {memberData.totalDays} Days</span></h3>
+                                                    <p className="text-xs text-zinc-400 mt-1">Last Action: {memberData.lastCheckIn}</p>
+                                                </div>
+                                                <div className="mt-6 pt-4 border-t border-zinc-900 text-xs text-emerald-400 font-mono">Status: Active Gym Member ✅</div>
                                             </div>
-                                        </div>
 
-                                        <div className="bg-zinc-950 border border-zinc-800 p-6 flex flex-col justify-between">
-                                            <div>
-                                                <span className="text-xs text-zinc-400 uppercase tracking-widest block mb-3">Attendance Progress</span>
-                                                <h3 className="text-3xl font-black text-white">{memberData.daysAttended} <span className="text-xs font-normal text-zinc-500">/ {memberData.totalDays} Days</span></h3>
-                                                <p className="text-xs text-zinc-400 mt-1">Last Action: {memberData.lastCheckIn}</p>
-                                            </div>
-                                            <div className="mt-6 pt-4 border-t border-zinc-900 text-xs text-emerald-400 font-mono">Status: Active Gym Member ✅</div>
-                                        </div>
+                                            {/* QR Scanner Card with STRICT Check-in/Check-out */}
+                                            <div className="bg-zinc-950 border border-zinc-800 p-6 flex flex-col items-center text-center justify-between">
+                                                <div className="w-full">
+                                                    <span className="text-xs text-zinc-300 uppercase tracking-widest font-bold block mb-1">Scan Master Entrance QR</span>
+                                                    <p className="text-[11px] text-zinc-500 mb-3">Select IN when entering or OUT when leaving</p>
 
-                                        {/* QR Scanner Card with STRICT Check-in/Check-out */}
-                                        <div className="bg-zinc-950 border border-zinc-800 p-6 flex flex-col items-center text-center justify-between">
-                                            <div className="w-full">
-                                                <span className="text-xs text-zinc-300 uppercase tracking-widest font-bold block mb-1">Scan Master Entrance QR</span>
-                                                <p className="text-[11px] text-zinc-500 mb-3">Select IN when entering or OUT when leaving</p>
-
-                                                {/* Current Status Indicator */}
-                                                <div className={`text-[10px] font-mono uppercase tracking-wider mb-3 px-3 py-1.5 border w-full ${memberCurrentStatus === "IN"
-                                                    ? 'bg-emerald-950 border-emerald-900 text-emerald-400'
-                                                    : memberCurrentStatus === "OUT"
-                                                        ? 'bg-orange-950 border-orange-900 text-orange-400'
-                                                        : 'bg-zinc-900 border-zinc-800 text-zinc-500'
-                                                    }`}>
-                                                    {memberCurrentStatus === "IN"
-                                                        ? "🟢 Currently Inside Gym"
+                                                    {/* Current Status Indicator */}
+                                                    <div className={`text-[10px] font-mono uppercase tracking-wider mb-3 px-3 py-1.5 border w-full ${memberCurrentStatus === "IN"
+                                                        ? 'bg-emerald-950 border-emerald-900 text-emerald-400'
                                                         : memberCurrentStatus === "OUT"
-                                                            ? "🔴 Checked Out (Can Check-IN again)"
-                                                            : "⚪ Not Checked In Yet"}
+                                                            ? 'bg-orange-950 border-orange-900 text-orange-400'
+                                                            : 'bg-zinc-900 border-zinc-800 text-zinc-500'
+                                                        }`}>
+                                                        {memberCurrentStatus === "IN"
+                                                            ? "🟢 Currently Inside Gym"
+                                                            : memberCurrentStatus === "OUT"
+                                                                ? "🔴 Checked Out (Can Check-IN again)"
+                                                                : "⚪ Not Checked In Yet"}
+                                                    </div>
+
+                                                    {/* Check-IN / Check-OUT Buttons with Locks */}
+                                                    <div className="flex gap-2 justify-center mb-3">
+                                                        <button
+                                                            onClick={() => setCheckInType("IN")}
+                                                            disabled={memberCurrentStatus === "IN"}
+                                                            className={`px-4 py-1.5 text-xs font-bold uppercase transition ${memberCurrentStatus === "IN"
+                                                                ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed border border-zinc-800'
+                                                                : checkInType === 'IN'
+                                                                    ? 'bg-emerald-600 text-white'
+                                                                    : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
+                                                                }`}
+                                                        >
+                                                            Check-IN {memberCurrentStatus === "IN" && "🔒"}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setCheckInType("OUT")}
+                                                            disabled={memberCurrentStatus !== "IN"}
+                                                            className={`px-4 py-1.5 text-xs font-bold uppercase transition ${memberCurrentStatus !== "IN"
+                                                                ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed border border-zinc-800'
+                                                                : checkInType === 'OUT'
+                                                                    ? 'bg-orange-600 text-white'
+                                                                    : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
+                                                                }`}
+                                                        >
+                                                            Check-OUT {memberCurrentStatus !== "IN" && "🔒"}
+                                                        </button>
+                                                    </div>
+
+                                                    <div className="bg-white p-2 inline-block shadow-lg">
+                                                        <div className="w-24 h-24 bg-zinc-950 flex flex-col items-center justify-center text-white p-2">
+                                                            <ScanLine className="h-7 w-7 text-emerald-400 animate-bounce mb-1" />
+                                                            <span className="text-[9px] font-mono">MASTER QR</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
 
-                                                {/* Check-IN / Check-OUT Buttons with Locks */}
-                                                <div className="flex gap-2 justify-center mb-3">
+                                                <div className="w-full mt-3">
                                                     <button
-                                                        onClick={() => setCheckInType("IN")}
-                                                        disabled={memberCurrentStatus === "IN"}
-                                                        className={`px-4 py-1.5 text-xs font-bold uppercase transition ${memberCurrentStatus === "IN"
-                                                            ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed border border-zinc-800'
+                                                        onClick={() => simulateMasterQRScan(checkInType)}
+                                                        disabled={
+                                                            (checkInType === "IN" && memberCurrentStatus === "IN") ||
+                                                            (checkInType === "OUT" && memberCurrentStatus !== "IN")
+                                                        }
+                                                        className={`w-full font-bold py-2.5 text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 ${(checkInType === "IN" && memberCurrentStatus === "IN") ||
+                                                            (checkInType === "OUT" && memberCurrentStatus !== "IN")
+                                                            ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
                                                             : checkInType === 'IN'
-                                                                ? 'bg-emerald-600 text-white'
-                                                                : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
+                                                                ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                                                                : 'bg-orange-600 hover:bg-orange-500 text-white'
                                                             }`}
                                                     >
-                                                        Check-IN {memberCurrentStatus === "IN" && "🔒"}
+                                                        <ArrowRightLeft className="h-4 w-4" /> Simulate Scan ({checkInType} Pass)
                                                     </button>
-                                                    <button
-                                                        onClick={() => setCheckInType("OUT")}
-                                                        disabled={memberCurrentStatus !== "IN"}
-                                                        className={`px-4 py-1.5 text-xs font-bold uppercase transition ${memberCurrentStatus !== "IN"
-                                                            ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed border border-zinc-800'
-                                                            : checkInType === 'OUT'
-                                                                ? 'bg-orange-600 text-white'
-                                                                : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
-                                                            }`}
-                                                    >
-                                                        Check-OUT {memberCurrentStatus !== "IN" && "🔒"}
-                                                    </button>
+
+                                                    {/* Status Message with Dynamic Colors */}
+                                                    {scanStatus && (
+                                                        <p className={`text-[10px] mt-2 font-mono p-2 border ${scanStatus.includes("❌")
+                                                            ? 'text-red-400 bg-red-950/40 border-red-900'
+                                                            : scanStatus.includes("✅")
+                                                                ? 'text-emerald-400 bg-emerald-950/40 border-emerald-900'
+                                                                : 'text-amber-400 bg-amber-950/40 border-amber-900'
+                                                            }`}>
+                                                            {scanStatus}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* ===== NEXT FEE BREAKDOWN ===== */}
+                                        <div className="bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 border border-zinc-800 p-8">
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <IndianRupee className="h-6 w-6 text-emerald-400" />
+                                                <div>
+                                                    <h3 className="text-xl font-black text-white uppercase tracking-tight">Next Fee Breakdown</h3>
+                                                    <p className="text-xs text-zinc-400">Mee next renewal ki entha pay cheyyalo ikkada chudandi</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                                {/* Fee Breakdown Table */}
+                                                <div className="lg:col-span-2 bg-zinc-950 border border-zinc-800 p-6">
+                                                    <div className="space-y-4">
+                                                        <div className="flex justify-between items-center pb-3 border-b border-zinc-800">
+                                                            <span className="text-sm text-zinc-300">Original Fee ({memberData.membershipType})</span>
+                                                            <span className="text-sm font-mono text-zinc-400">₹3,200</span>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-sm text-emerald-400 flex items-center gap-2">
+                                                                <Check className="h-4 w-4" /> 90% Attendance Discount
+                                                            </span>
+                                                            <span className="text-sm font-mono text-emerald-400 font-bold">−₹30</span>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-sm text-pink-400 flex items-center gap-2">
+                                                                <Gift className="h-4 w-4" /> {rewardsData.friendsReferred} Referrals ({rewardsData.friendsReferred} × ₹100)
+                                                            </span>
+                                                            <span className="text-sm font-mono text-pink-400 font-bold">−₹{rewardsData.referralEarnings}</span>
+                                                        </div>
+                                                        <div className="flex justify-between items-center pt-4 border-t-2 border-zinc-700">
+                                                            <span className="text-base font-black text-white uppercase">Total Payable</span>
+                                                            <span className="text-2xl font-black text-amber-400 font-mono">₹2,970</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
 
-                                                <div className="bg-white p-2 inline-block shadow-lg">
-                                                    <div className="w-24 h-24 bg-zinc-950 flex flex-col items-center justify-center text-white p-2">
-                                                        <ScanLine className="h-7 w-7 text-emerald-400 animate-bounce mb-1" />
-                                                        <span className="text-[9px] font-mono">MASTER QR</span>
+                                                {/* Savings Summary */}
+                                                <div className="bg-gradient-to-br from-emerald-950/40 to-zinc-950 border border-emerald-800 p-6 flex flex-col items-center text-center justify-center">
+                                                    <div className="text-5xl mb-3">🎉</div>
+                                                    <span className="text-xs uppercase tracking-widest text-emerald-400 font-mono mb-1">You Saved</span>
+                                                    <span className="text-4xl font-black text-white font-mono">₹230</span>
+                                                    <span className="text-[11px] text-zinc-400 mt-3">on your next renewal!</span>
+                                                    <div className="w-full mt-6 pt-4 border-t border-emerald-900/50">
+                                                        <span className="text-[10px] text-emerald-400 font-mono">💡 Stay consistent, save more!</span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className="w-full mt-3">
+                                            <div className="mt-6 flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-zinc-800">
+                                                <div className="flex items-center gap-2 text-xs text-zinc-400">
+                                                    <Calendar className="h-4 w-4 text-zinc-500" />
+                                                    <span>Renewal Date: <strong className="text-white">{memberData.expiryDate}</strong></span>
+                                                </div>
                                                 <button
-                                                    onClick={() => simulateMasterQRScan(checkInType)}
-                                                    disabled={
-                                                        (checkInType === "IN" && memberCurrentStatus === "IN") ||
-                                                        (checkInType === "OUT" && memberCurrentStatus !== "IN")
-                                                    }
-                                                    className={`w-full font-bold py-2.5 text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 ${(checkInType === "IN" && memberCurrentStatus === "IN") ||
-                                                        (checkInType === "OUT" && memberCurrentStatus !== "IN")
-                                                        ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
-                                                        : checkInType === 'IN'
-                                                            ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
-                                                            : 'bg-orange-600 hover:bg-orange-500 text-white'
-                                                        }`}
+                                                    onClick={() => handleUpiPayment("Quarterly Pass Renewal", 2970)}
+                                                    className="bg-white text-black font-bold px-6 py-3 text-xs uppercase tracking-widest hover:bg-zinc-200 transition flex items-center gap-2"
                                                 >
-                                                    <ArrowRightLeft className="h-4 w-4" /> Simulate Scan ({checkInType} Pass)
+                                                    <IndianRupee className="h-4 w-4" /> Pay ₹2,970 via UPI
                                                 </button>
-
-                                                {/* Status Message with Dynamic Colors */}
-                                                {scanStatus && (
-                                                    <p className={`text-[10px] mt-2 font-mono p-2 border ${scanStatus.includes("❌")
-                                                        ? 'text-red-400 bg-red-950/40 border-red-900'
-                                                        : scanStatus.includes("✅")
-                                                            ? 'text-emerald-400 bg-emerald-950/40 border-emerald-900'
-                                                            : 'text-amber-400 bg-amber-950/40 border-amber-900'
-                                                        }`}>
-                                                        {scanStatus}
-                                                    </p>
-                                                )}
                                             </div>
                                         </div>
                                     </div>
